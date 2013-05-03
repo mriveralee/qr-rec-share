@@ -1,5 +1,5 @@
 
-PC = {
+SS = {
     Config: {
         SHOULD_UPLOAD: false,
         SAVE_RECORDED_FILES: false,
@@ -77,7 +77,7 @@ $(document).ready(function() {
     toggleIsRecording();
   });
 
-  PC.isPlaying = false;
+  SS.isPlaying = false;
   $('#play-button-container').click(function() { 
      console.log('play button!');
      togglePlayAllSounds(nodeListForDrawing, true);
@@ -95,18 +95,18 @@ $(document).ready(function() {
 
 ///Toggle playback of songs
 var togglePlayAllSounds = function(nodePathList, shouldPlayRecording) {
-    if (PC.PLAY_TIMER) {
-        window.clearTimeout(PC.PLAY_TIMER);
+    if (SS.PLAY_TIMER) {
+        window.clearTimeout(SS.PLAY_TIMER);
     }
     nodeListForDrawing = (nodePathList) ? nodePathList : nodeListForDrawing;
-    if (PC.isPlaying) {
+    if (SS.isPlaying) {
       stopPreviousPathSounds();
       $('#stop-container').css({display: 'none'});
       $('#play-arrow-right').css({display: 'block'});
-      PC.isPlaying = false;
+      SS.isPlaying = false;
     }
     else {
-      PC.isPlaying = true;
+      SS.isPlaying = true;
       playSoundsForPath(nodeListForDrawing);
       
       if (shouldPlayRecording) {
@@ -116,7 +116,7 @@ var togglePlayAllSounds = function(nodePathList, shouldPlayRecording) {
       $('#play-arrow-right').css({display: 'none'});
       
       //console.log(MAX_DURATION);
-      PC.PLAY_TIMER = setTimeout(function() {
+      SS.PLAY_TIMER = setTimeout(function() {
           console.log('playback finished');
           stopPreviousPathSounds();
           $('#stop-container').css({display: 'none'});
@@ -127,13 +127,13 @@ var togglePlayAllSounds = function(nodePathList, shouldPlayRecording) {
 
 //Check if a sound is playing
 var checkIsPlaying = function() {
-  return PC.isPlaying;
+  return SS.isPlaying;
 };
 
 
 // Upload audio field functions moved out from uploadhover.js
 var showUploadFields = function(){
-  if (PC.Config.HAS_FILE_FOR_UPLOAD) {
+  if (SS.Config.HAS_FILE_FOR_UPLOAD) {
     if (!getFBUser()) {
       FB_API.login(showUploadFields);
       return;
@@ -456,7 +456,7 @@ function startRecorder() {
   stopPreviousPathSounds();
   $('#stop-container').css({display: 'none'});
   $('#play-arrow-right').css({display: 'block'});
-  PC.isPlaying = false;
+  SS.isPlaying = false;
   if (selectedRecording) {
     stopSelectedRecording();
   }
@@ -585,11 +585,11 @@ function stopRecorder() {
         recorder.exportWAV(function(s) {
             numRecordings++;
             //console.log("Posted from Worker: " + s.blob + ", and buffer: " + s.buffer);
-            PC.Config.SHOULD_UPLOAD = true;
+            SS.Config.SHOULD_UPLOAD = true;
             masterRecording = s.blob;
             //TODO: This will be 1-indexed... is that alright?
             RECORDING_BLOBS[numRecordings] = s.blob;
-            //if(PC.Constants.SAVE_RECORDED_FILES) saveAs(s.blob, "wavtest.wav");
+            //if(SS.Constants.SAVE_RECORDED_FILES) saveAs(s.blob, "wavtest.wav");
             BUFFERS.push(s.buffer);
             context1.decodeAudioData(BUFFERS[numRecordings-1], function(buffer) {
                 //Commented out as a result of the 30 seconds thing
@@ -618,7 +618,7 @@ function stopRecorder() {
         //recorder
         isAudioStopped = true;
         //Allow us to upload
-        PC.Config.HAS_FILE_FOR_UPLOAD = true;
+        SS.Config.HAS_FILE_FOR_UPLOAD = true;
     }
 }
 //masterRecording = "TEST";
@@ -633,7 +633,7 @@ function uploadRecording(file) {
     //Show Upload window again!
     return;
   }
-  if (PC.Config.SHOULD_UPLOAD && hasFBUser) {   
+  if (SS.Config.SHOULD_UPLOAD && hasFBUser) {   
     //This is where we should POST
     if (masterRecording) {
       //console.log("Posters gonna post");
@@ -645,12 +645,10 @@ function uploadRecording(file) {
           userID = (fbUser.id) ? fbUser.id : -1,
           userName = (fbUser.username) ? fbUser.username : 'Anonymous';
           //soundArtist = $('#upload-artist').val() ? $('#upload-artist').val()  : 'Anonymous',
-      var parentNodeID = (getCurrentParentNodeID) ? getCurrentParentNodeID() : getCurrentRootNodeID();
-          parentNodeID = (parentNodeID) ? parentNodeID : 'ROOT';
 
-      var treeID = getCurrentTreeID();
+
       clearUploadFields();
-      if (treeID) {
+      if (soundArtist && SoundTitle) {
         //Create the upload form data
         var formData = new FormData();
         var soundNode = {
@@ -658,11 +656,6 @@ function uploadRecording(file) {
           'artist': removeHTMLTags(soundArtist),
           'fb_id': userID,
           'fb_username': userName,
-          'tree_id': treeID,
-          'parent_node_id': parentNodeID,
-          'delay_time': (RP_WHEN) ? RP_WHEN : 0,
-          'duration': (RP_DURATION) ? RP_DURATION : -1,
-          'offset_time': (RP_OFFSET) ? RP_OFFSET : 0
         };
         var fileName = ("s"+userID+soundTitle+ (Math.round(Math.random()*134365967)+29)) + ".wav";
         //console.log("File Upload Name: " + fileName);
@@ -682,13 +675,13 @@ function uploadRecording(file) {
               //console.log(data);
               //TODO USE SOCKETS TO UPDATE TREE
               //window.location.href = window.location.href;
-              PC.NEEDS_FIRST_SOUND = false;
+              SS.NEEDS_FIRST_SOUND = false;
             },
             error: function(req, status, error){
               console.log(error);
             }
         });
-        //PC.Config.SHOULD_UPLOAD = false;
+        //SS.Config.SHOULD_UPLOAD = false;
       }
     }
   }
@@ -703,7 +696,7 @@ function getRecording() {
     contentType: false
     }).done(function(data) {
       downloadedRecording = data;
-      // //if(PC.Constants.SAVE_RECORDED_FILES) saveAs(data, "downloadtest.wav");
+      // //if(SS.Constants.SAVE_RECORDED_FILES) saveAs(data, "downloadtest.wav");
       // console.log("Sample of data:", data.buffer.slice(0, 100));
       // numRecordings++;
       // BUFFERS.push(data.buffer);
@@ -1106,7 +1099,7 @@ processor.onaudioprocess = function() {
 
 context.oncomplete = function() {
     stopPreviousPathSounds();
-    PC.isPlaying = false;
+    SS.isPlaying = false;
 }
 
 function averageValueOverRange(array, range) {
@@ -1171,7 +1164,7 @@ var getDateString = function(timestamp) {
 //Accessor for getting a recording color by an index
 var getRecordingColor = function(index) {
   if (!index || index > 0) index = 0;
-  return PC.RECORDING_COLORS[index];
+  return SS.RECORDING_COLORS[index];
 }
 
 //Used for setting recording color circle div
@@ -1240,7 +1233,7 @@ var getURLParameterByName = function(name)
 
 //Gets the FBUser Information
 var getFBUser = function() {
-  return PC.Config.FB_USER;
+  return SS.Config.FB_USER;
 }
 
 //Sets the title of the pages (after tree load)
