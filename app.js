@@ -56,7 +56,7 @@ server.listen(app.get('port'), function() {
 //################ Socket IO ######################//
 var io = require('socket.io').listen(server);
 io.set('log level', 0);
-//var sendTreeUpdate;
+
 io.sockets.on('connection', function (socket) {
 
   // Sends an event to a connected client with the tag 'my server event'
@@ -139,7 +139,8 @@ app.get('/sound/:id?', function(req,res) {
     //Tell our DB we need the sound URL
     var shouldRetrieveURL = true;
     //Check database for our sound-node information and return it to our callback
-    DB.getSoundNode(nodeID, sendFileCallback, shouldRetrieveURL);
+    /// BLAH BLAH
+
 }
 });
 
