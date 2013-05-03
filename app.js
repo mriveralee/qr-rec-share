@@ -148,7 +148,7 @@ app.get('/sound/:id?', function(req,res) {
     //Create callback function to act on the sound file URL
     var node = UPLOADED_SOUNDS[nodeID];
     if (node) {
-      console.log ("Found Node!");
+      //console.log ("Found Node!");
       var soundURL = node.sound_url;
       //console.log(node);
       if (soundURL) {
@@ -178,7 +178,7 @@ app.post('/upload/sound', fileUploadMiddleWare, function(req, res) {
   //TODO: MAX FILE SIZE 16713000? If greater, we erase this file and res.send a failure
   var body = req.body;
   if (body) {
-    console.log(req.body);
+    //console.log(req.body);
     var hasSound = body.soundFile && body.soundFile.length > 0 && body.soundFile[0].path && body.soundFile[0].basename;
     var hasSoundNode = body.soundData;
 
@@ -187,7 +187,7 @@ app.post('/upload/sound', fileUploadMiddleWare, function(req, res) {
     if (hasSound && hasSoundNode) {
       var soundData = JSON.parse(body.soundData);
       var soundFile = body.soundFile[0];
-      console.log(soundData);
+      //console.log(soundData);
       //Log the file path
       var fileName = soundFile.basename;
 
@@ -214,7 +214,7 @@ app.post('/upload/sound', fileUploadMiddleWare, function(req, res) {
         var URL = filePath;
         UPLOADED_SOUNDS[CURRENT_SOUND_COUNT] = new SoundNode(artist, title, URL, CURRENT_SOUND_COUNT);
         CURRENT_SOUND_COUNT += 1;
-        console.log(UPLOADED_SOUNDS);
+        //console.log(UPLOADED_SOUNDS);
         //Cycle the sound count / replace old sounds
         if (CURRENT_SOUND_COUNT > 4) CURRENT_SOUND_COUNT = 0;
       }
