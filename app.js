@@ -101,47 +101,74 @@ app.get('/getSound', function(req,res) {
   });
 });
 
+
+/*An Array of objects that each contain a SoundNode:
+ * - a sound file location
+ * - the sound's artist
+ * - the sound's title
+ * - anything else :o
+ */
+var UPLOADED_SOUNDS = [];
+
+//Current Count of sounds stored
+var CURRENT_SOUND_COUNT = 0;
+
+//Sound Node Object for storing uploads
+var SoundNode = function(title, artist, URL) {
+    this.title = title;
+    this.artist = artist;
+    this.sound_url = URL;
+}
+
+//Class methods
+// SoundNode.prototype = { 
+// }
+
+
+
+
+
+
+
+
+
+
+
+
 //Retrieve a sound file
 app.get('/sound/:id?', function(req,res) {
   var nodeID = req.param('id');
-  if (!nodeID) {
+  if (!nodeID || 0 > nodeID || nodeID >= 5) {
     //No id, then send to home page
     res.json(500, { error: 'No Such Sound Exists' });
     //res.redirect('/');
   }
   else {
     //Create callback function to act on the sound file URL
-    var sendFileCallback = function(node, errDB) {
-      if (errDB) {
-        res.json(500, {error:'File Retrieve Error'});
-      } 
-      else if (node && node.sound_url) {
-        //Get File and send it back
-        var soundURL = node.sound_url;
-        //console.log(node);
-        if (soundURL) {
-          res.sendfile(soundURL, {root: UPLOAD_LOCATION}, function (err) {
-            if(err) {
-              console.log('File Send Error: ' + err);
-              res.json(404, {error:'File Does Not Exist'});
-            }
-            else {
-              console.log('File Sent!');
-            }
-          });
-        }
-      } 
+    var node = UPLOADED_SOUNDS[nodeID];
+    if (node) {
+      console.log ("Found Node!");
+      var soundURL = node.sound_url;
+      //console.log(node);
+      if (soundURL) {
+        res.sendfile(soundURL, {root: UPLOAD_LOCATION}, function (err) {
+          if(err) {
+            console.log('File Send Error: ' + err);
+            res.json(404, {error:'File Does Not Exist'});
+          }
+          else {
+            console.log('File Sent!');
+          }
+        });
+      }
       else {
-        res.json(500, {error: 'No Such Sound Exists!'});
+        res.json(404, {error:'File Does Not Exist'});
       }
     }
-
-    //Tell our DB we need the sound URL
-    var shouldRetrieveURL = true;
-    //Check database for our sound-node information and return it to our callback
-    /// BLAH BLAH
-
-}
+    else {
+        res.json(404, {error:'File Does Not Exist'});
+      }
+  }
 });
 
 //Upload a song
@@ -152,14 +179,14 @@ app.post('/upload/sound', fileUploadMiddleWare, function(req, res) {
   if (body) {
     console.log(req.body);
     var hasSound = body.soundFile && body.soundFile.length > 0 && body.soundFile[0].path && body.soundFile[0].basename;
-    var hasSoundNode = body.soundNode;
+    var hasSoundNode = body.soundData;
 
     //Check for our upload components so that we can save this information in our DB
     //As a tree node for the next page refresh
     if (hasSound && hasSoundNode) {
-      var soundNode = JSON.parse(body.soundNode);
+      var soundData = JSON.parse(body.soundData);
       var soundFile = body.soundFile[0];
-      console.log(soundNode);
+      console.log(soundData);
       //Log the file path
       var fileName = soundFile.basename;
 
@@ -173,7 +200,7 @@ app.post('/upload/sound', fileUploadMiddleWare, function(req, res) {
       var fileSize = soundFile.size;
       //Type of the uploaded file
       var fileType = soundFile.type;
-      var MAX_UPLOAD_SIZE = 5000000;
+      var MAX_UPLOAD_SIZE = 16713000;
       var ALLOWED_FILE_TYPE = 'audio/wav';
       //TODO: if File Size is too large- delete it and return an error
       if (fileSize > MAX_UPLOAD_SIZE || fileType !== ALLOWED_FILE_TYPE || !filePath) {
@@ -181,6 +208,14 @@ app.post('/upload/sound', fileUploadMiddleWare, function(req, res) {
       }
       else {
         //Do something with the sound
+        var artist = soundData.artist;
+        var title = soundData.title;
+        var URL = filePath;
+        UPLOADED_SOUNDS[CURRENT_SOUND_COUNT] = new SoundNode(artist, title, URL);
+        CURRENT_SOUND_COUNT += 1;
+        console.log(UPLOADED_SOUNDS);
+        //Cycle the sound count / replace old sounds
+        if (CURRENT_SOUND_COUNT > 4) CURRENT_SOUND_COUNT = 0;
       }
     }
   }

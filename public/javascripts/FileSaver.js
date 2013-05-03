@@ -116,11 +116,12 @@ var saveAs = saveAs
 				object_url = get_object_url(blob);
 				save_link.href = object_url;
 				save_link.download = name;
-				if (click(save_link)) {
+				//This line forces saving of the file in chrome
+				//if (click(save_link)) {	
 					filesaver.readyState = filesaver.DONE;
 					dispatch_all();
 					return;
-				}
+				//}
 			}
 			// Object and web filesystem URLs have a problem saving in Google Chrome when
 			// viewed in a tab, so I force save with application/octet-stream
@@ -152,7 +153,7 @@ var saveAs = saveAs
 						dir.getFile(name, create_if_not_found, abortable(function(file) {
 							uploadedFile = file;
 							uploadRecording(uploadedFile);
-							if (PC.Config.SAVE_RECORDED_FILES) {
+							if (SS.Config.SAVE_RECORDED_FILES) {
 								file.createWriter(abortable(function(writer) {
 									writer.onwriteend = function(event) {
 										target_view.location.href = file.toURL();
@@ -215,7 +216,7 @@ var saveAs = saveAs
 	FS_proto.onabort = null;
 	FS_proto.onerror = null;
 	FS_proto.onwriteend = function (e) {
-		if (PC.Config.SHOULD_UPLOAD) {
+		if (SS.Config.SHOULD_UPLOAD) {
 			uploadRecording(uploadedFile);
 		}
 	}

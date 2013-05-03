@@ -62,7 +62,6 @@ $(document).ready(function() {
       function() {
         hideUserDataView();
         cancelUpload()
-        cancelCreateTree();
   });
 
 
@@ -130,56 +129,6 @@ var checkIsPlaying = function() {
   return SS.isPlaying;
 };
 
-
-// Upload audio field functions moved out from uploadhover.js
-var showUploadFields = function(){
-  if (SS.Config.HAS_FILE_FOR_UPLOAD) {
-    if (!getFBUser()) {
-      FB_API.login(showUploadFields);
-      return;
-    }
-    //console.log("upload window shown");
-
-    var user = getFBUser();
-    var name = user.name;
-    var picture = user.picture;
-    var currDate = getDateString(new Date().getTime());
-  
-    $('#upload-text-window').css("display", "block");
-    $('#upload-text-window').animate({top: '20%'}, 0);
-    $('#upload-prof-pic').attr({src: picture});
-    $('#upload-username').html(name);
-    $('#upload-date').html(currDate);
-    $('#modal-overlay').css('display', 'block');
-  }
-};
-
-var hideUploadFields = function() {
-  $('#upload-text-window').animate({top: '-1000px'}, 0);
-  $('#modal-overlay').css('display', 'none');
-};
-
-var clearUploadFields = function() {
-  $('#upload-title').val('');
-  $('#upload-artist').val('');
-};
-
-
-
-var submitUpload = function(){
-  //console.log('upload submitted');
- // $('#upload-text-window').css("display", "none");
-  hideUploadFields();
-  //Save File to the desktop and upload to the server!
-  saveAs(masterRecording, "sound.wav");
-
-};
-
-var cancelUpload = function(){
-  //console.log('upload canceled');
- // $('#upload-text-window').css("display", "none");
-  hideUploadFields();
-};
 
 
 
@@ -623,17 +572,70 @@ function stopRecorder() {
 }
 //masterRecording = "TEST";
 
-function uploadRecording(file) {
-  var fbUser = getFBUser();
-  var hasFBUser = fbUser && fbUser.id && fbUser.name;
-  if (!hasFBUser) {
-    //TODO: FAILED TO UPLOAD FILE - INVALID LOG IN TOAST
-    //show error message
-    //console.log('Not Logged In!');
-    //Show Upload window again!
-    return;
+
+// Upload audio field functions moved out from uploadhover.js
+var showUploadFields = function(){
+  if (SS.Config.HAS_FILE_FOR_UPLOAD) {
+    // if (!getFBUser()) {
+    //   FB_API.login(showUploadFields);
+    //   return;
+    // }
+    //console.log("upload window shown");
+
+    // var user = getFBUser();
+    // var name = user.name;
+    // var picture = user.picture;
+    var currDate = getDateString(new Date().getTime());
+  
+    $('#upload-text-window').css("display", "block");
+    $('#upload-text-window').animate({top: '20%'}, 0);
+    // $('#upload-prof-pic').attr({src: picture});
+    // $('#upload-username').html(name);
+    $('#upload-date').html(currDate);
+    $('#modal-overlay').css('display', 'block');
   }
-  if (SS.Config.SHOULD_UPLOAD && hasFBUser) {   
+};
+
+var hideUploadFields = function() {
+  $('#upload-text-window').animate({top: '-1000px'}, 0);
+  $('#modal-overlay').css('display', 'none');
+};
+
+var clearUploadFields = function() {
+  $('#upload-title').val('');
+  $('#upload-artist').val('');
+};
+
+
+
+var submitUpload = function(){
+  //console.log('upload submitted');
+ // $('#upload-text-window').css("display", "none");
+  hideUploadFields();
+  //Save File to the desktop and upload to the server!
+  saveAs(masterRecording, "sound.wav");
+
+};
+
+var cancelUpload = function(){
+  //console.log('upload canceled');
+ // $('#upload-text-window').css("display", "none");
+  hideUploadFields();
+};
+
+
+
+function uploadRecording(file) {
+  // var fbUser = getFBUser();
+  // var hasFBUser = fbUser && fbUser.id && fbUser.name;
+  // if (!hasFBUser) {
+  //   //TODO: FAILED TO UPLOAD FILE - INVALID LOG IN TOAST
+  //   //show error message
+  //   //console.log('Not Logged In!');
+  //   //Show Upload window again!
+  //   //return;
+  // }
+  if (SS.Config.SHOULD_UPLOAD) {  //&& hasFBUser) {   
     //This is where we should POST
     if (masterRecording) {
       //console.log("Posters gonna post");
@@ -641,27 +643,27 @@ function uploadRecording(file) {
       //console.log("Buffer: " + masterRecording.buffer);
       //Upload Data
       var soundTitle = $('#upload-title').val() ? $('#upload-title').val() : 'Untitled',
-          soundArtist = fbUser.name ? fbUser.name  : 'Anonymous',
-          userID = (fbUser.id) ? fbUser.id : -1,
-          userName = (fbUser.username) ? fbUser.username : 'Anonymous';
+          soundArtist = $('#upload-artist').val() ? $('#upload-artist').val() : 'Anonymous'
+          ;//userID = (fbUser && fbUser.id) ? fbUser.id : -1,
+          //userName = (fbUser && fbUser.username) ? fbUser.username : soundArtist;
           //soundArtist = $('#upload-artist').val() ? $('#upload-artist').val()  : 'Anonymous',
 
 
       clearUploadFields();
-      if (soundArtist && SoundTitle) {
+      if (soundArtist && soundTitle) {
         //Create the upload form data
         var formData = new FormData();
-        var soundNode = {
+        var soundData = {
           'title': removeHTMLTags(soundTitle),
           'artist': removeHTMLTags(soundArtist),
-          'fb_id': userID,
-          'fb_username': userName,
+          //'fb_id': userID,
+          //'fb_username': userName,
         };
-        var fileName = ("s"+userID+soundTitle+ (Math.round(Math.random()*134365967)+29)) + ".wav";
+        var fileName = (soundArtist+' - '+soundTitle+ (Math.round(Math.random()*134365967)+29)) + ".wav";
         //console.log("File Upload Name: " + fileName);
         
         //Stringify our JSON and add the sound file & soundNode to the form data
-        formData.append('soundNode', JSON.stringify(soundNode));
+        formData.append('soundData', JSON.stringify(soundData));
         formData.append('soundFile', masterRecording, fileName);
         //Start the upload process
         //console.log("Posting!");
