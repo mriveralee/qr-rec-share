@@ -1,0 +1,30 @@
+{
+  "name": "qr-rec-share",
+  "version": "0.0.0-0",
+  "private": false,
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "express": "3.1.0",
+    "ejs": "*",
+    "require": "*",
+    "socket.io": "*",
+    "socket.io-client": "*",
+    "request": "*",
+    "async": "0.1.x",
+    "fileupload": "*",
+    "file": "*"
+  },
+  "description": "IPD Response 3 - Using QR Code to allow users to record and share sounds.",
+  "main": "app.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mriveralee/qr-rec-share"  
+  },
+  "keywords": [
+    "sound",
+    "share",
+    "record"
+  ]
+}

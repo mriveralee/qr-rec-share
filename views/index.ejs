@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+      <title>PhaseChange</title>
+
+        <link href='http://fonts.googleapis.com/css?family=Arimo|Roboto:400,300italic,700,900,500,300,100|Roboto+Condensed|Oxygen: 300,400|Pontano+Sans' rel='stylesheet' type='text/css'>
+
+        <link rel='shortcut icon' href='/images/favicon.ico' type='image/x-icon'>
+        
+
+        <!--Socket IO-Client from Node Modules-->
+        <script type='text/javascript' src='./socket.io/socket.io.js'></script>
+        <!--JQuery From Google Code -->
+        <script type='text/javascript' src='//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js'></script>
+
+        <!-- Unminified for testing -->
+        <link rel='stylesheet' type='text/css' href='./stylesheets/main.css'>
+        <script type='text/javascript' src='./javascripts/sound-share.js'></script>
+        <script type='text/javascript' src='./javascripts/underscore.js'></script>
+        <script type='text/javascript' src='./javascripts/my-sockets.js'></script>
+         <script type='text/javascript' src='./javascripts/FileSaver.js'></script>
+        <script type='text/javascript' src='./javascripts/audio/recorder.js'></script>
+        <script type='text/javascript' src='./javascripts/audio/recorderWorker.js'></script>
+
+    </head>
+
+    <body>
+        <div id='modal-overlay'></div>
+        <div id='first-node-upload' class='controls-title'>
+            This Tree is Fresh - Record the First Sound!
+        </div>
+        
+            
+            <div id='upload-text-window'>
+                <div id='upload-info'>
+                    <div id='upload-header'>
+                        <img class='popup-header-logo' src='./images/sounds-icon.png'>
+                        <span class='v-mid'>Add your sound.</span>
+                    </div>
+                    <div id='upload-user-info'>
+                        <div id='upload-wrapper'>
+                            <div id='upload-user-input'>
+                                <img id='upload-prof-pic' class='float-left'>
+                                <span id='upload-username'></span>
+                                
+                                <input id='upload-title' type='text' name='Title' placeholder=' Sound Title' required maxlength='20'>
+                                <span id='upload-date'></span>
+                                <br />
+                            </div>
+                        </div>
+                    </div>
+                    <div id='upload-button-container'>            
+                        <button id='submit-upload'>Create
+                        </button>
+                        <button id='cancel-upload'>Cancel
+                        </button>
+                    </div>
+                </div><!--upload-info-->
+            </div><!--upload-text-window-->
+
+          
+        <div id='fb-root'></div>    
+        <div id='main-wrapper'> 
+            <div id='header'>
+                <div id='header-logo'>
+                    <div id='header-title-wrapper' class='center'>
+                        <div id='header-title'>
+                            test<span class='medium-wt'>test</span>
+                        </div>
+                        <div id='header-subtitle'>
+                            some subtitle
+                        </div>
+                    </div>
+                    <!--img id='header-logo-img' src='./images/logo_48.png'/-->  
+                </div><!--header-logo-->
+                <div id='header-tree-info'>
+                    <div id='tree-title'>
+                    </div>
+                </div>
+                <div id='header-interaction' class='float-right'>
+                    <div id='header-link-container'>
+                        <div id='sign-up' class='float-left header-link' title='Sign-up'>
+                           <span class='vertical-center-header'>FB Login</span>
+                        </div>
+                        <!--if logged in-->
+                        <div id='logged-in' >   
+                            <div id='add-tree' class='header-link float-left'>
+                            <div class='table-cell v-mid center header-height'>
+                                <div class='inline-block'>
+                                    <img id='add-tree-icon' src='images/tree_icon_48.png' title='Add a tree'/>
+                                </div>
+                            </div>
+                            </div> 
+                            <div class='user-img-container' class='float-left'>
+                                <div id='user-img-container' class='header-img-link table-cell v-mid center header-height'>
+                                    <div class='inline-block'>
+                                        <img id='user-img' class='v-mid' src='images/person_32.png' title='You' />
+                                    </div>
+                                </div>
+                                <div id='gear-icon-container' class='header-img-link table-cell v-mid center header-height'>
+                                    <div class='inline-block'>
+                                        <img id='gear-icon' class='v-mid' src='images/gear.png' title='Log out' />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>  
+                        
+
+                    </div>
+                </div><!--header-buttons--> 
+            </div><!--header-->
+
+           
+
+            
+             <div id='tree-view-container'></div>
+        </div><!--main-wrapper-->  
+        <div id='controls-container'>
+            <div class='controls-divider fl-left-inblock'>
+            </div>
+            <div id='record-container' class='controls-subcontainer'> 
+                <div class='controls-title v-mid'>
+                    <span class='controls-symbol'>&#9679;</span>
+                    Recording
+                    <span class='controls-subtitle contrib-subtitle'>
+                        make your mark
+                    </span>
+                    <img id='record-sound-img' class='float-right pad-right-med' src='/images/sound.png' title='Mute'/>
+                    <br>
+                    <span>
+                       
+                    </span>
+                </div>
+                <div id='user-contrib-list' class='controls-text'>
+                        <li id='no-recordings' class='contrib-node-title pontano-style'>You haven't made any recordings!</li>
+                </div> 
+                <div id='recording-controls'>
+                    <div id='record-button-container' class='record-control-button-border'>
+                        <div id='record-button-wrap'  title='Click to record!'>
+                            <div id='record-color-wrapper' class='pink-button'>
+                                <span id='record-button-text' class='record-controls-text'>     Record
+                                 </span>
+                                <span class='full-width center'>
+                                    <div id='record-button-color-bg' class='circular'>
+                                        <div id='record-button-color-on' class='circular'>
+                                        </div>
+                                        <div id='record-button-color-off' class='circular'>
+                                        </div>
+                                    </div>
+                                </span>
+                                
+                            </div>
+                        </div>   
+                    </div>
+
+
+
+                    <div id='viz-canvases'>
+                        <div id='spectrum-container'>
+                            <div id='spectrum-title' class='record-controls-text'>
+                                Audio Spectrum
+                            </div>
+                            <canvas id='spectrum-canvas' width='116' height='42'>
+                        </div>
+                      
+                        <div id='volume-container' title='Left and right channel volumes'>
+                            <div id='spectrum-title' class='record-controls-text'>
+                                Volume
+                            </div>
+                            <canvas id='volume-canvas' width='40' height='42'>
+                        </div>
+                    </div>
+                    <div id='play-button-container'>
+                         <div id='play-button-wrap'  title='Click to play!'>
+                             <div id='play-color-wrapper' class='pink-button'>
+                                <span id='play-button-text' class='record-controls-text'>     Play
+                                 </span>
+                                <span class='full-width center'>
+                                    <div id='play-button-color-bg' class='circular'>
+                                        <div id='play-arrow-right'>
+                                        </div>
+                                        <div id='stop-container'></div>
+                                        <!--div id='pause-container'>
+                                             <div id='pause-slice'></div>
+                                              <div id='pause-gap'></div>
+                                              <div id='pause-slice'></div>
+                                        </div-->
+                                    </div>
+                                </span> 
+                            </div>
+                        </div>
+                    </div>
+                    <div id='upload-control-button-container'>
+                         <div id='upload-button-wrap'  title='Click to upload your sound!'>
+                             <div id='upload-color-wrapper' class='pink-button'>
+                                <span id='upload-button-text' class='record-controls-text'>     Upload
+                                 </span>
+                                    <div id='upload-button-color-bg' class='circular'>
+                                        <div id='upload-arrow'>
+                                        </div>
+                                        <div id='upload-arrow-block'></div>
+                                        <!--div id='pause-container'>
+                                             <div id='pause-slice'></div>
+                                              <div id='pause-gap'></div>
+                                              <div id='pause-slice'></div>
+                                        </div-->
+                                    </div>
+                            </div>
+                        </div>
+                    </div>
+                </div> 
+
+   
+<!--- new -->
+               
+            </div>
+            <div id='waveform-view-container'>
+                <canvas id='waveform-canvas' width='250' height='100'>
+                </canvas>
+                <canvas id='playhead-canvas' width='250' height='95'>
+                </canvas>
+                <canvas id='recording-canvas' width='250' height='95'>
+                </canvas>
+            </div>
+
+        </div><!--controls-container-->
+    </body>
+</html>
+
