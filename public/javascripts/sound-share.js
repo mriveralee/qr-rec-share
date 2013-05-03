@@ -1,33 +1,16 @@
-//Phase Change Namespace
+
 PC = {
-    Constants: {
-      HOVER_VIEW_ID: '#node-hover-view'
-    },
     Config: {
         SHOULD_UPLOAD: false,
         SAVE_RECORDED_FILES: false,
-        IS_SLIDER_HIDDEN: true,
-        HAS_FILE_FOR_UPLOAD: false,
-		IS_EQ_ON: true
-    },
-    TREES: {
-      '0': []
-    },
-    NODE_DATA: {
-
+        HAS_FILE_FOR_UPLOAD: false
     },
     NEEDS_FIRST_SOUND: false,
     PLAY_TIMER: null,
     RECORDING_COLORS: [
       0x106587,
-    ],
-    RAND_PATH_LIST: {},
-    RAND_PATH_COUNT: 0,
+    ]
 };
-
-
-
-var THE_TREE_MODEL;
 
 
 $(document).ready(function() {
@@ -43,9 +26,6 @@ $(document).ready(function() {
 
       // //grab tree ID from URL
       // var currentTreeID = getCurrentTreeID();
-      // if (currentTreeID !== "") {
-      //   THE_TREE_MODEL = new PC.SoundTreeModel({id: currentTreeID});
-      // }
 
   }
 
@@ -703,7 +683,6 @@ function uploadRecording(file) {
               //TODO USE SOCKETS TO UPDATE TREE
               //window.location.href = window.location.href;
               PC.NEEDS_FIRST_SOUND = false;
-              THE_TREE_MODEL.refreshData();
             },
             error: function(req, status, error){
               console.log(error);
