@@ -119,6 +119,7 @@ var SoundNode = function(title, artist, URL, soundID) {
     this.artist = artist;
     this.sound_url = URL;
     this.sound_id = soundID;
+    this.date_created = (new Date()).getTime();
 }
 
 //Class methods
@@ -226,6 +227,31 @@ app.post('/upload/sound', fileUploadMiddleWare, function(req, res) {
 });
 
 
+//Get a list of all the sounds 
+app.get('/history', function(req, res) {
+  var soundHistory = [];
+  for (var i = 0; i < UPLOADED_SOUNDS.length; i+=1) {
+    //Get original soundNode
+    var soundNode = UPLOADED_SOUNDS[i];
+    
+    //Copy values except for sound url
+    var nodeObject = {
+      title: soundNode.title,
+      artist: soundNode.artist,
+      sound_id: soundNode.sound_id,
+      date_created: soundNode.date_created
+    };
+    //Push into our history buffer
+    soundHistory.push(nodeObject);
+  }
+  //Send the array back 
+  res.json(200, soundHistory);
+
+
+});
+
+
+
 //Get a sound node's data
 app.get('/node/:id', function(req, res) {
   var nodeID = req.param('id');
@@ -241,7 +267,8 @@ app.get('/node/:id', function(req, res) {
      var data = {
       title: node.title,
       artist: node.artist,
-      sound_id: node.sound_id
+      sound_id: node.sound_id,
+      date_created: node.date_created
      };
      res.json(200, data);
     }

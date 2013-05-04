@@ -23,11 +23,60 @@ $(document).ready(function() {
    * Initializes demo functionality 
    */
   var initDemo = function() {
+      //GRAB ALL SOUNDS ON THE PAGE
+      getSoundInformation();
 
-      // //grab tree ID from URL
-      // var currentTreeID = getCurrentTreeID();
 
-  }
+  };
+
+  var getSoundInformation = function() {
+    $.ajax({
+      type: 'GET',
+      url: '/history',
+      success: function(data, status, req) {
+        //SORT BY DATE_CREATED
+        data = sortByParam(data, 'date_created');
+        console.log(data);
+
+        for (var i = 0; i < data.length; i++) {
+          var tree = data[i];
+          var title = removeHTMLTags(tree.title);
+          var date = getDateString(tree.date_created);
+          //insertUserTreeListItem(title, date, treeID);
+        }
+      },
+      error: function(req, status, error){
+        console.log(error);
+
+        //TODO: error uploading the tree
+      },
+    });
+
+  };
+  //SORTS SO THAT HIGHEST APPEAR FIRST
+  var sortByParam = function(data, param) {
+    if (!data || !param) return;
+    for (var i = 0; i < data.length; i++) {
+      //Get first object
+      var obj1 = data[i];
+      var d1 = obj1[param];
+      var highestNum = i;
+      for (var j = i+1; j < data.length; j++) {
+        //Get second object
+        var obj2 = data[j];
+        var d2 = obj2[param];
+        //console.log(d1, d2);
+        if (d2 > d1) {
+          highestNum = j;
+        }
+      }
+      //Swap
+      var t = data[i];
+      data[i] = data[highestNum];
+      data[highestNum] = t;
+    }
+    return data;
+  };
 
   //Start Demo
   initDemo();
