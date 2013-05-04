@@ -280,14 +280,16 @@ app.get('/node/:id', function(req, res) {
 
 
 
-
+var VISIT_COUNT = 0;
 
 //Main route
 app.get('/', function(req, res) {
+        VISIT_COUNT += 1;
     var templateVars = {
         //Add some template variables
         PAGE_TITLE: 'Node (Express 3.0.1) & Socket.io Bootstrap'
     };
+
     //Render the index.ejs file with any template variables
     res.render('index', templateVars);
 });

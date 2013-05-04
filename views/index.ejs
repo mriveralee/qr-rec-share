@@ -62,29 +62,13 @@
 
           
         <div id='fb-root'></div>    
-        <div id='main-wrapper'> 
+        <!--div id='main-wrapper'> 
             <div id='header'>
-                <div id='header-logo'>
-                    <div id='header-title-wrapper' class='center'>
-                        <div id='header-title'>
-                            test<span class='medium-wt'>test</span>
-                        </div>
-                        <div id='header-subtitle'>
-                            some subtitle
-                        </div>
-                    </div>
-                    <!--img id='header-logo-img' src='./images/logo_48.png'/-->  
-                </div><!--header-logo-->
-                <div id='header-tree-info'>
-                    <div id='tree-title'>
-                    </div>
-                </div>
                 <div id='header-interaction' class='float-right'>
                     <div id='header-link-container'>
                         <div id='sign-up' class='float-left header-link' title='Sign-up'>
                            <span class='vertical-center-header'>FB Login</span>
                         </div>
-                        <!--if logged in-->
                         <div id='logged-in' >   
                             <div id='add-tree' class='header-link float-left'>
                             <div class='table-cell v-mid center header-height'>
@@ -106,124 +90,130 @@
                                 </div>
                             </div>
                         </div>  
-                        
-
                     </div>
-                </div><!--header-buttons--> 
-            </div><!--header-->
-
-           
-
-            
-             <div id='main-view-container'></div>
-        </div><!--main-wrapper-->  
-        <div id='controls-container'>
-            <div class='controls-divider fl-left-inblock'>
-            </div>
-            <div id='record-container' class='controls-subcontainer'> 
-                <div class='controls-title v-mid'>
-                    <span class='controls-symbol'>&#9679;</span>
-                    Recording
-                    <span class='controls-subtitle contrib-subtitle'>
-                        make your mark
-                    </span>
-                    <img id='record-sound-img' class='float-right pad-right-med' src='/images/sound.png' title='Mute'/>
-                    <br>
-                    <span>
-                       
-                    </span>
                 </div>
-                <div id='user-contrib-list' class='controls-text'>
-                        <li id='no-recordings' class='contrib-node-title pontano-style'>You haven't made any recordings!</li>
-                </div> 
-                <div id='recording-controls'>
-                    <div id='record-button-container' class='record-control-button-border'>
-                        <div id='record-button-wrap'  title='Click to record!'>
-                            <div id='record-color-wrapper' class='pink-button'>
-                                <span id='record-button-text' class='record-controls-text'>     Record
-                                 </span>
-                                <span class='full-width center'>
-                                    <div id='record-button-color-bg' class='circular'>
-                                        <div id='record-button-color-on' class='circular'>
-                                        </div>
-                                        <div id='record-button-color-off' class='circular'>
-                                        </div>
-                                    </div>
-                                </span>
-                                
-                            </div>
-                        </div>   
-                    </div>
-
-
-
-                    <div id='viz-canvases'>
-                        <div id='spectrum-container'>
-                            <div id='spectrum-title' class='record-controls-text'>
-                                Audio Spectrum
-                            </div>
-                            <canvas id='spectrum-canvas' width='116' height='42'>
-                        </div>
-                      
-                        <div id='volume-container' title='Left and right channel volumes'>
-                            <div id='spectrum-title' class='record-controls-text'>
-                                Volume
-                            </div>
-                            <canvas id='volume-canvas' width='40' height='42'>
-                        </div>
-                    </div>
-                    <div id='play-button-container'>
-                         <div id='play-button-wrap'  title='Click to play!'>
-                             <div id='play-color-wrapper' class='pink-button'>
-                                <span id='play-button-text' class='record-controls-text'>     Play
-                                 </span>
-                                <span class='full-width center'>
-                                    <div id='play-button-color-bg' class='circular'>
-                                        <div id='play-arrow-right'>
-                                        </div>
-                                        <div id='stop-container'></div>
-                                        <!--div id='pause-container'>
-                                             <div id='pause-slice'></div>
-                                              <div id='pause-gap'></div>
-                                              <div id='pause-slice'></div>
-                                        </div-->
-                                    </div>
-                                </span> 
-                            </div>
-                        </div>
-                    </div>
-                    <div id='upload-control-button-container'>
-                         <div id='upload-button-wrap'  title='Click to upload your sound!'>
-                             <div id='upload-color-wrapper' class='pink-button'>
-                                <span id='upload-button-text' class='record-controls-text'>     Upload
-                                 </span>
-                                    <div id='upload-button-color-bg' class='circular'>
-                                        <div id='upload-arrow'>
-                                        </div>
-                                        <div id='upload-arrow-block'></div>
-                                        <!--div id='pause-container'>
-                                             <div id='pause-slice'></div>
-                                              <div id='pause-gap'></div>
-                                              <div id='pause-slice'></div>
-                                        </div-->
-                                    </div>
-                            </div>
-                        </div>
-                    </div>
-                </div> 
-
-   
-<!--- new -->
-               
             </div>
-            <div id='waveform-view-container'>
-                <canvas id='waveform-canvas' width='250' height='100'>
-                </canvas>
-                <canvas id='playhead-canvas' width='250' height='95'>
-                </canvas>
-                <canvas id='recording-canvas' width='250' height='95'>
-                </canvas>
+        </div-->
+        <div id='top'></div>
+        <div id="floater"></div>
+        <div id='control-wrap'> 
+            <div id='controls-container'>
+                <div id='header-logo'>
+                    <div id='header-title-wrapper' class='center'>
+                        <div id='header-title'>
+                            <span class='medium-wt'>SoundShare</span>
+                        </div>
+                        <div id='header-subtitle'>
+                            SoundShare
+                        </div>
+                    </div>
+                    <!--img id='header-logo-img' src='./images/logo_48.png'/-->  
+                </div><!--header-logo-->
+                <!--div class='controls-divider fl-left-inblock'>
+                </div-->
+                <div id='record-container' class='controls-subcontainer'> 
+                    <div class='controls-title v-mid'>
+                        <span class='controls-symbol'>&#9679;</span>
+                        Recording
+                        <span class='controls-subtitle contrib-subtitle'>
+                            make your mark
+                        </span>
+                        <img id='record-sound-img' class='float-right pad-right-med' src='/images/sound.png' title='Mute'/>
+                        <br>
+                        <span>
+                           
+                        </span>
+                    </div>
+                    <div id='user-contrib-list' class='controls-text'>
+                            <li id='no-recordings' class='contrib-node-title pontano-style'>You haven't made any recordings!</li>
+                    </div> 
+                    <div id='rec-wrapping'>
+                    <div id='recording-controls'>
+                        <div id='record-button-container' class='record-control-button-border'>
+                            <div id='record-button-wrap'  title='Click to record!'>
+                                <div id='record-color-wrapper' class='pink-button'>
+                                    <span id='record-button-text' class='record-controls-text'>     Record
+                                     </span>
+                                    <span class='full-width center'>
+                                        <div id='record-button-color-bg' class='circular'>
+                                            <div id='record-button-color-on' class='circular'>
+                                            </div>
+                                            <div id='record-button-color-off' class='circular'>
+                                            </div>
+                                        </div>
+                                    </span>
+                                    
+                                </div>
+                            </div>   
+                        </div>
+                        <div id='waveform-view-container'>
+                            <canvas id='waveform-canvas' width='250' height='100'>
+                            </canvas>
+                            <canvas id='playhead-canvas' width='250' height='95'>
+                            </canvas>
+                            <canvas id='recording-canvas' width='250' height='95'>
+                            </canvas>
+                         </div>
+
+
+                        <div id='viz-canvases'>
+                            <div id='spectrum-container'>
+                                <div id='spectrum-title' class='record-controls-text'>
+                                    Audio Spectrum
+                                </div>
+                                <canvas id='spectrum-canvas' width='116' height='42'>
+                            </div>
+                          
+                            <div id='volume-container' title='Left and right channel volumes'>
+                                <div id='spectrum-title' class='record-controls-text'>
+                                    Volume
+                                </div>
+                                <canvas id='volume-canvas' width='40' height='42'>
+                            </div>
+                        </div>
+                        <div id='play-button-container'>
+                             <div id='play-button-wrap'  title='Click to play!'>
+                                 <div id='play-color-wrapper' class='pink-button'>
+                                    <span id='play-button-text' class='record-controls-text'>     Play
+                                     </span>
+                                    <span class='full-width center'>
+                                        <div id='play-button-color-bg' class='circular'>
+                                            <div id='play-arrow-right'>
+                                            </div>
+                                            <div id='stop-container'></div>
+                                            <!--div id='pause-container'>
+                                                 <div id='pause-slice'></div>
+                                                  <div id='pause-gap'></div>
+                                                  <div id='pause-slice'></div>
+                                            </div-->
+                                        </div>
+                                    </span> 
+                                </div>
+                            </div>
+                        </div>
+                        <div id='upload-control-button-container'>
+                             <div id='upload-button-wrap'  title='Click to upload your sound!'>
+                                 <div id='upload-color-wrapper' class='pink-button'>
+                                    <span id='upload-button-text' class='record-controls-text'>     Upload
+                                     </span>
+                                        <div id='upload-button-color-bg' class='circular'>
+                                            <div id='upload-arrow'>
+                                            </div>
+                                            <div id='upload-arrow-block'></div>
+                                            <!--div id='pause-container'>
+                                                 <div id='pause-slice'></div>
+                                                  <div id='pause-gap'></div>
+                                                  <div id='pause-slice'></div>
+                                            </div-->
+                                        </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div> 
+                </div>
             </div>
+        </div>
+
 
         </div><!--controls-container-->
     </body>
