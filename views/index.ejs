@@ -104,14 +104,13 @@
                             <span class='medium-wt'>SoundShare</span>
                         </div>
                         <div id='header-subtitle'>
-                            SoundShare
+                            SoundShare <br /> <br />
+                            <img id='header-logo-img' src='./images/qr-code.gif' /> 
                         </div>
                     </div>
-                    <!--img id='header-logo-img' src='./images/logo_48.png'/-->  
                 </div><!--header-logo-->
-                <!--div class='controls-divider fl-left-inblock'>
-                </div-->
-                <img id='header-logo-img' src='./images/qr-code.gif' /> 
+     
+                
                 <div id='record-container' class='controls-subcontainer'> 
                     <div class='controls-title v-mid'>
                         <span class='controls-symbol'>&#9679;</span>
@@ -147,14 +146,7 @@
                                 </div>
                             </div>   
                         </div>
-                        <div id='waveform-view-container'>
-                            <canvas id='waveform-canvas' width='250' height='100'>
-                            </canvas>
-                            <canvas id='playhead-canvas' width='250' height='95'>
-                            </canvas>
-                            <canvas id='recording-canvas' width='250' height='95'>
-                            </canvas>
-                         </div>
+                        
 
 
                         <div id='viz-canvases'>
@@ -162,7 +154,14 @@
                                 <div id='spectrum-title' class='record-controls-text'>
                                     Audio Spectrum
                                 </div>
-                                <canvas id='spectrum-canvas' width='116' height='42'>
+                                <div id='waveform-view-container'>
+
+                                    <canvas id='playhead-canvas' width='250' height='95'>
+                                    </canvas>
+                                    <canvas id='recording-canvas' width='250' height='95'>
+                                    </canvas>
+                                 </div>
+                                <!--canvas id='spectrum-canvas' width='116' height='42'-->
                             </div>
                           
                             <div id='volume-container' title='Left and right channel volumes'>
@@ -213,8 +212,10 @@
                     </div> 
                 </div>
             </div>
+            <!--img id='header-logo-img' src='./images/qr-code.gif' /--> 
         </div>
-
+                                    <canvas id='waveform-canvas' width='250' height='100'>
+                                    </canvas>
 
         </div><!--controls-container-->
     </body>
