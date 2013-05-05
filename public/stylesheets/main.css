@@ -781,6 +781,7 @@ h2 {
   height: 140px;
   width: 100%;
   padding: 10px;
+  overflow:auto;
 }
 
 #history-contrib-list li { 

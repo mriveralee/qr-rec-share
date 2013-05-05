@@ -13,8 +13,12 @@ SS = {
 };
 
 
-$(document).ready(function() {
 
+
+
+$(document).ready(function() {
+  var IS_MOBILE = (/iPhone|iPod|iPad|Android|BlackBerry/).test(navigator.userAgent);
+  console.log('IS MOBILE: ',IS_MOBILE);
   //##################################################################//
   //############################## DEMO ##############################//
   //##################################################################//
@@ -56,17 +60,20 @@ var retrieveSoundFromServer = function(nodeID) {
     xhr.onload = function() {
       console.log('Received sound file!');
       //console.log(data);
+      var n = currentNode.sound_id;
       data = xhr.response;
       SOUND_BLOBS[nodeID] = data;
 
       //Set the raw audio on the model
-      var nodeData = getNodeData(nodeID);
+      var nodeData = getNodeData(n);
       nodeData.raw_audio =  data;
       //Reset the nodeData
-      addNodeData(nodeData);
+      addNodeData(n);
+
+      if (IS_MOBILE) addAudioTag(n, data);
 
       //Decode the sound node
-      decodeSoundNode(nodeID);
+      decodeSoundNode(n);
       //console.log(xhr);
       // context.decodeAudioData(xhr.response, function(buffer) {
       //   console.log(buffer);
@@ -76,6 +83,23 @@ var retrieveSoundFromServer = function(nodeID) {
     xhr.send();
   }
 };
+
+var addAudioTag = function (nodeID, buffer) {
+  var dataView = new DataView(buffer);
+  var blob = new Blob([dataView], { type: 'audio/wav' });
+  var srcURL = window.URL.createObjectURL(blob);
+  var listItem = '<div class="">'
+                  + '<audio controls="controls" src="'+ srcURL +'">'
+                    + 'Your browser does not support audio!'
+                  + '</audio>'
+                 +'</div>';
+
+
+    var el = "#history-contrib-list";
+    $(el).append(listItem);
+
+}
+
 
 //Decode a sond that is returned for the XHR request
 var decodeSoundNode = function(nodeID) {
@@ -119,7 +143,10 @@ var decodeSoundNode = function(nodeID) {
           //Get the actual sound file
           retrieveSoundFromServer(item.sound_id);
           //Add the list item for the sound
-          addHistoryItem(item);
+
+          if (!IS_MOBILE) {
+            addHistoryItem(item);
+          }
 
 
           //insertUserTreeListItem(title, date, treeID);
@@ -251,7 +278,7 @@ var addHistoryItem = function(item) {
                         +soundImage
                           //+ colorCircle
                           //insert a play button
-                          + '<input type="radio" name="sounds" id="' + soundID + '" class="float-left marg-top-sm">'
+                          + '<input checked type="radio" name="sounds" id="' + soundID + '" class="float-left marg-top-sm">'
                           + '<span class="contrib-item-desc">'
                             + '<span class="contrib-node-title">' 
                               + title+', '
@@ -272,13 +299,15 @@ var addHistoryItem = function(item) {
     // for (var i = 0; i < NODE_DATA-1; i++) {
     //   $('#sound-'+i).removeAttr('checked');
     // }
-
+    selectedSound = id;
     //Make a click listener
     $('#'+soundID).click(function() {
+      selectedSound = id;
       stopSelectedRecording();
       stopPreviousPathSounds();
+
       playHistorySound(id);
-      selectedSound = id;
+
        // // alert(soundID+ 'Item changed');
        //  if (SHOULD_PLAY[id] == 1) {
        //    SHOULD_PLAY[id] = 0;
@@ -661,8 +690,9 @@ function uploadRecording(file) {
             success: function(data, status, req) {
               //console.log(data);
               //TODO USE SOCKETS TO UPDATE TREE
-              //window.location.href = window.location.href;
-              SS.NEEDS_FIRST_SOUND = false;
+              console.log('uploaded!');
+              window.location.href = window.location.href;
+              //SS.NEEDS_FIRST_SOUND = false;
             },
             error: function(req, status, error){
               console.log(error);
@@ -724,7 +754,7 @@ function playAllSounds() {
 
 
 function playHistorySound(historyID) {
-  if (!selectedSound) return;
+  if (selectedSound ==null) return;
   source = context.createBufferSource();
   source.buffer = DECODED_SOUND_NODES['sound-'+historyID];
   source.connect(context.destination);
@@ -738,6 +768,7 @@ function playHistorySound(historyID) {
 }
 
 function playRecordingSound(recID) {
+  if (!recID || recID <0) return;
   //Offset id by 1
   recID = recID+1;
   recordingSource = context.createBufferSource();
