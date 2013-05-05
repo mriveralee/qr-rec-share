@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+      <title> Mobile | Sound Share</title>
+
+        <link href='http://fonts.googleapis.com/css?family=Arimo|Roboto:400,300italic,700,900,500,300,100|Roboto+Condensed|Oxygen: 300,400|Pontano+Sans' rel='stylesheet' type='text/css'>
+
+        <link rel='shortcut icon' href='/images/favicon.ico' type='image/x-icon'>
+        
+
+        <!--Socket IO-Client from Node Modules-->
+        <script type='text/javascript' src='./socket.io/socket.io.js'></script>
+        <!--JQuery From Google Code -->
+       
+
+        <!-- Unminified for testing -->
+        <link rel='stylesheet' type='text/css' href='./stylesheets/main.css'>
+    </head>
+
+    <body>
+        <div id='top'></div>
+        <div id="floater"></div>
+        <div id='control-wrap'> 
+            <div id='controls-container'>
+                <div id='header-logo'>
+                    <div id='header-title-wrapper' class='center'>
+                        <div id='header-title'>
+                            <span class='medium-wt'>Sound Share</span>
+                        </div>
+                        <div id='header-subtitle'>
+                            Mobile <br /> <br />
+                            <img id='header-logo-img' src='./images/qr-code.gif' /> 
+                        </div>
+                    </div>
+                </div><!--header-logo-->
+                <div id='sound-history-container' class='controls-subcontainer'>
+                    <div class='controls-title v-mid'>
+                        History
+                        <span class='controls-subtitle contrib-subtitle'>
+                            the sounds of many
+                        </span>
+                        <br>
+                    </div>
+                    <div id='history-contrib-list' class='controls-text'>
+                        <% if (SOUND_COUNT <= 0) { %>
+                            <li id='no-history' class='contrib-node-title pontano-style'>
+                                There is no history for this sound share!
+                            </li>
+                        <% } else { %>
+                            <% for (var i= 0; i < SOUND_COUNT; i++) { %>
+                                <audio src="<%='/sound/'+i%>" controls='controls'></audio><br>
+                            <% } %>
+                        <% } %>
+                    </div> 
+                </div>
+            </div>
+            <!--img id='header-logo-img' src='./images/qr-code.gif' /--> 
+        </div>
+                                    <canvas id='waveform-canvas' width='250' height='100'>
+                                    </canvas>
+
+        </div><!--controls-container-->
+    </body>
+</html>
+

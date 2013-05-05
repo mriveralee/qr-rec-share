@@ -110,6 +110,15 @@ app.get('/getSound', function(req,res) {
  */
 var UPLOADED_SOUNDS = [];
 
+//Sample Sound
+UPLOADED_SOUNDS.push( {
+  'title': 'Initial Test',
+  'artist': 'Mystery',
+  'date_created': (new Date).getTime(),
+  'sound_id': 0,
+  'sound_url': 'test-sound/Testing93661850.wav'
+});
+
 //Current Count of sounds stored
 var CURRENT_SOUND_COUNT = 0;
 
@@ -282,6 +291,20 @@ app.get('/node/:id', function(req, res) {
 
 
 var VISIT_COUNT = 0;
+
+app.get('/mobile', function(req, res) {
+    VISIT_COUNT += 1;
+    var VARS = {
+        //Add some template variables
+        PAGE_TITLE: 'Node (Express 3.0.1) & Socket.io Bootstrap',
+        SOUND_COUNT: UPLOADED_SOUNDS.length
+    };
+
+    //Render the index.ejs file with any template variables
+    res.render('index-mobile', VARS);
+});
+
+
 
 //Main route
 app.get('/', function(req, res) {

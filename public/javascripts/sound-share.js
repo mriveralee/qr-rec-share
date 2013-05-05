@@ -14,11 +14,15 @@ SS = {
 
 
 
+var IS_MOBILE = (/iPhone|iPod|iPad|Android|BlackBerry/).test(navigator.userAgent);
+//IS_MOBILE = true;
+console.log('IS MOBILE: ',IS_MOBILE);
+  if (IS_MOBILE) {
+    window.location.href = window.location.href+'mobile';
+  }
 
 
 $(document).ready(function() {
-  var IS_MOBILE = (/iPhone|iPod|iPad|Android|BlackBerry/).test(navigator.userAgent);
-  console.log('IS MOBILE: ',IS_MOBILE);
   
   //IS_MOBILE = true;
   //##################################################################//
