@@ -297,7 +297,8 @@ app.get('/mobile', function(req, res) {
     var VARS = {
         //Add some template variables
         PAGE_TITLE: 'Node (Express 3.0.1) & Socket.io Bootstrap',
-        SOUND_COUNT: UPLOADED_SOUNDS.length
+        SOUND_COUNT: UPLOADED_SOUNDS.length,
+        UPLOADED_SOUNDS: UPLOADED_SOUNDS
     };
 
     //Render the index.ejs file with any template variables

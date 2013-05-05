@@ -48,8 +48,39 @@
                                 There is no history for this sound share!
                             </li>
                         <% } else { %>
+                            <% 
+                                var getDateString = function(timestamp) {
+                                  var date = new Date(timestamp);
+                                  var year = date.getFullYear();
+                                  var month = date.getMonth()+1;
+                                  var day = date.getDate();
+                                  var hours = date.getHours();
+                                  var mins = date.getMinutes();
+                                  var secs = date.getSeconds();
+
+                                  //Format Time
+                                  var isNight = hours > 12
+                                  hours = hours%12; //append zero
+                                  mins = (mins < 10 ? '0' : '') + mins;
+                                  //secs = (secs < 10 ? '0' : '') + secs;
+
+                                  var dayTime = isNight ? "pm" : "am";
+
+                                  var dateString = month + "/" + day + "/" + year 
+                                                   + ' - ' + hours + ":" + mins 
+                                                   + dayTime;
+                                  //console.log(dateString);
+                                  return dateString;
+                                };
+                            %>
                             <% for (var i= 0; i < SOUND_COUNT; i++) { %>
-                                <audio src="<%='/sound/'+i%>" controls='controls'></audio><br>
+
+
+                                <span class="contrib-node-title"><%=UPLOADED_SOUNDS[i].title %>, </span>'
+                                <span class="contrib-node-artist"><%=UPLOADED_SOUNDS[i].artist %> - </span>
+                                <span class="contrib-node-date"><%=getDateString(new Date().getTime())%></span>
+                                <br/>
+                            <audio src="<%='/sound/'+i%>" controls='controls'></audio><br/>
                             <% } %>
                         <% } %>
                     </div> 
