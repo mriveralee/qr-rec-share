@@ -39,9 +39,8 @@ $(document).ready(function() {
         console.log(data);
 
         for (var i = 0; i < data.length; i++) {
-          var tree = data[i];
-          var title = removeHTMLTags(tree.title);
-          var date = getDateString(tree.date_created);
+          var item = data[i];
+          addHistoryItem(item);
           //insertUserTreeListItem(title, date, treeID);
         }
       },
@@ -86,22 +85,10 @@ $(document).ready(function() {
   //##################################################################//
   //Hover for upload button
   $('#upload-control-button-container').click(showUploadFields);
-  // $('#upload-control-button-container').hover(
-  //   function() {
-  //     //Hover in
-  //     //console.log('hovered!');
-  //     //$('#upload-arrow-block').css({'background-color': 'rgb(97,97,97)'});
-  //     //$('#upload-arrow').css({'border-bottom': '15px solid rgb(97,97,97)'});
 
-  // }, function() {
-  //     //Hover Out
-  //     $('#upload-arrow-block').css({'background-color': 'rgb(65, 65, 65)'});
-  //     $('#upload-arrow').css({'border-bottom': '15px solid rgb(65, 65, 65)'});
-  // });
   ///Upload Window buttons
   $('#submit-upload').click(submitUpload);
   $('#cancel-upload').click(cancelUpload);
-
 
 
 
@@ -180,7 +167,117 @@ var checkIsPlaying = function() {
 
 
 
+var isFirstHistoryItem = true;
 
+//Adds an item to the list of history
+var addHistoryItem = function(item) {
+    //Remove no history
+    if (isFirstHistoryItem) {
+      $('#history-contrib-list').html("");
+      isFirstHistoryItem = false;
+    }
+    var title = removeHTMLTags(item.title);
+    var date = getDateString(item.date_created);
+    var id = item.sound_id;
+    var artist = item.artist ? item.artist ? : 'Anonymous';
+
+
+    var soundID = 'sound-'+ id;
+
+    //Update hashmap with the id
+    SHOULD_PLAY[id] = 1;
+    //Append the check box
+    //Add a change listener to the checkbox to update the hashmap value for playing
+    var user = getFBUser();
+    var userName =  (user) ? user.name : 'Anonymous';
+    var listItem = '<li class="history-contrib-list-item">'
+                        + '<label for="' + soundID + '">'
+                          //+ colorCircle
+                          //insert a play button
+                          + '<input checked type="checkbox" id="' + soundID + '" class="float-left marg-top-sm">'
+                          + '<span class="contrib-item-desc">'
+                            + '<span class="contrib-node-title">' 
+                              + 'Sound #'+id+', '
+                            + '</span>'
+                            + '<span class="contrib-node-artist">' 
+                              + artist + ' - '
+                            + '</span>'
+                            + '<span class="contrib-node-date">' 
+                              + date
+                            + '</span>'
+                          + '</span>'
+                        + '</label>'
+                    + '</li>';
+
+    var el = "#user-contrib-list";
+    $(el).append(listItem);
+    //Remove all checked sound recordings
+    for (var i = 0; i < numRecordings-1; i++) {
+      $('#sound-'+i).removeAttr('checked');
+    }
+
+    //Make a click listener
+    $('#'+soundID).change(function() {
+       // alert(soundID+ 'Item changed');
+        if (SHOULD_PLAY[id] == 1) {
+          SHOULD_PLAY[id] = 0;
+          selectedRecording = id + 1;
+          //#AUD
+          resetWODVals();
+          stopSelectedRecording();
+          stopPreviousPathSounds();
+          //Commented out as a result of the 30 seconds thing
+          //recalculateMaxLength(true);
+          drawWaveforms();
+          drawRecordingWaveform(RW_OFFSET);
+          //recalculateMaxLength(true);
+          for (var i = 0; i < numRecordings; i++) {
+            if (i !== id) {
+              $('#sound-'+i).removeAttr('checked');
+            }
+          }
+          drawWaveforms();
+          drawRecordingWaveform();
+        }
+        else {
+          SHOULD_PLAY[id] = 1;
+          selectedRecording = id + 1;
+          resetWODVals();
+          stopSelectedRecording();
+          stopPreviousPathSounds();
+          //Commented out as a result of the 30 seconds thing
+          //recalculateMaxLength(true);
+          drawWaveforms();
+          drawRecordingWaveform(RW_OFFSET);
+          //recalculateMaxLength(true);
+          for (var i = 0; i < numRecordings; i++) {
+            if (i !== id) {
+              $('#sound-'+i).removeAttr('checked');
+            }
+          }
+          drawWaveforms();
+          drawRecordingWaveform();
+        }
+    });
+    //Draw the new wave forms after we record a new sound
+    drawWaveforms();
+    drawRecordingWaveform();
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//Show the data view for an individual user
 var showUserDataView = function() {
   if (!getFBUser()) {
       FB_API.login(showUserDataView);
@@ -428,18 +525,6 @@ function toggleIsRecording() {
     $('#record-button-color-off').css({display:'none'});
     $('#record-button-text').text('Stop');
     isRecording = true;
-  }
-}
-
-function toggleRecordingMonitorOn() {
-  if (recordingMonitorOn) {
-      $('#monitor-off').css({display: 'block'});
-      recordingMonitorOn = false;
-
-  }
-  else {
-      $('#monitor-off').css({display: 'none'});
-      recordingMonitorOn = true;
   }
 }
 
@@ -926,27 +1011,29 @@ function recalculateMaxLength(withRecording) {
 //#AUD
 function drawRecordingWaveform(when, offset, duration) {
   //console.log("Duration: " + duration);
-  var c = document.getElementById("recording-canvas");
-  c.width = c.width;
-  if (numRecordings > 0 && selectedRecording > 0) {
-    //console.log("Drawing WF");
-    var color = getRecordingWaveformColor();
-    drawWaveformForNode("rec-"+selectedRecording, color, c, when, offset, duration);
-    if (RECORDING_IS_HOVERED) {
-      var ctx = c.getContext("2d");
-      ctx.strokeStyle = "rgba(0, 50, 0, 0.5)";
-      ctx.beginPath();
-      ctx.moveTo(when, 0);
-      ctx.lineTo(when, c.height);
-      ctx.stroke();
-      ctx.closePath();
+  if (false) {
+    var c = document.getElementById("recording-canvas");
+    c.width = c.width;
+    if (numRecordings > 0 && selectedRecording > 0) {
+      //console.log("Drawing WF");
+      var color = getRecordingWaveformColor();
+      drawWaveformForNode("rec-"+selectedRecording, color, c, when, offset, duration);
+      if (RECORDING_IS_HOVERED) {
+        var ctx = c.getContext("2d");
+        ctx.strokeStyle = "rgba(0, 50, 0, 0.5)";
+        ctx.beginPath();
+        ctx.moveTo(when, 0);
+        ctx.lineTo(when, c.height);
+        ctx.stroke();
+        ctx.closePath();
 
-      ctx.beginPath();
-      ctx.moveTo(when + duration, 0);
-      ctx.lineTo(when + duration, c.height);
-      ctx.stroke();
-      ctx.closePath();
-      //console.log("Drew starting line");
+        ctx.beginPath();
+        ctx.moveTo(when + duration, 0);
+        ctx.lineTo(when + duration, c.height);
+        ctx.stroke();
+        ctx.closePath();
+        //console.log("Drew starting line");
+      }
     }
   }
   if (selectedRecording > 0) {
@@ -959,6 +1046,7 @@ function drawWaveformForNode(nodeID, color, c, when, offset, duration) {
   //return;
   //var c = document.getElementById("waveform-canvas");
   //console.log("Canvas Width: " + c.width);
+  return;
   var ctx = c.getContext("2d");
   if (DECODED_SOUND_NODES[nodeID]) {
     var left = DECODED_SOUND_NODES[nodeID].getChannelData(0);
@@ -1010,7 +1098,6 @@ function secondsToPixels(val, c) {
 }
 
 function resetWODVals () {
-  var r = document.getElementById("recording-canvas");
 
   RP_WHEN = 0;
   RP_OFFSET = 0;
@@ -1029,22 +1116,22 @@ var tri_w = 10;
 var tri_h = 10;
 function draw() {
   if (context.activeSourceCount > 0) {
-    var c = document.getElementById("playhead-canvas");
-    var ctx = c.getContext("2d");
+    // var c = document.getElementById("playhead-canvas");
+    // var ctx = c.getContext("2d");
 
-    var percentplayed = (new Date() - PLAY_START_TIME)/(1000*MAX_DURATION);
-    //ctx.clearRect(0, 0, c.width, c.height);
-    //ctx.clearRect(Math.max(0, Math.floor(c.width*percentplayed - 20)), 0, 20, c.height); 
-    c.width = c.width;
-    ctx.beginPath();
-    ctx.moveTo(Math.floor(c.width*percentplayed), tri_h);
-    ctx.lineTo(Math.floor(c.width*percentplayed)-(tri_w/2), 0);
-    ctx.lineTo(Math.floor(c.width*percentplayed)+(tri_w/2), 0);
-    ctx.lineTo(Math.floor(c.width*percentplayed), tri_h);
-    //ctx.lineTo(Math.floor(c.width*percentplayed), c.height);
-    ctx.strokeStyle = "#ffffff";
-    ctx.lineWidth = 2;
-    ctx.stroke();
+    // var percentplayed = (new Date() - PLAY_START_TIME)/(1000*MAX_DURATION);
+    // //ctx.clearRect(0, 0, c.width, c.height);
+    // //ctx.clearRect(Math.max(0, Math.floor(c.width*percentplayed - 20)), 0, 20, c.height); 
+    // c.width = c.width;
+    // ctx.beginPath();
+    // ctx.moveTo(Math.floor(c.width*percentplayed), tri_h);
+    // ctx.lineTo(Math.floor(c.width*percentplayed)-(tri_w/2), 0);
+    // ctx.lineTo(Math.floor(c.width*percentplayed)+(tri_w/2), 0);
+    // ctx.lineTo(Math.floor(c.width*percentplayed), tri_h);
+    // //ctx.lineTo(Math.floor(c.width*percentplayed), c.height);
+    // ctx.strokeStyle = "#ffffff";
+    // ctx.lineWidth = 2;
+    // ctx.stroke();
   }
   
   webkitRequestAnimationFrame(draw);

@@ -2,7 +2,7 @@
 
 <html>
     <head>
-      <title>SoundShare</title>
+      <title>Sound Share</title>
 
         <link href='http://fonts.googleapis.com/css?family=Arimo|Roboto:400,300italic,700,900,500,300,100|Roboto+Condensed|Oxygen: 300,400|Pontano+Sans' rel='stylesheet' type='text/css'>
 
@@ -101,19 +101,28 @@
                 <div id='header-logo'>
                     <div id='header-title-wrapper' class='center'>
                         <div id='header-title'>
-                            <span class='medium-wt'>SoundShare</span>
+                            <span class='medium-wt'>Sound Share</span>
                         </div>
                         <div id='header-subtitle'>
-                            SoundShare <br /> <br />
+                            Sound Share <br /> <br />
                             <img id='header-logo-img' src='./images/qr-code.gif' /> 
                         </div>
                     </div>
                 </div><!--header-logo-->
-     
-                
+                <div id='sound-history-container' class='controls-subcontainer'>
+                    <div class='controls-title v-mid'>
+                        History
+                        <span class='controls-subtitle contrib-subtitle'>
+                            the sounds of many
+                        </span>
+                        <br>
+                    </div>
+                    <div id='history-contrib-list' class='controls-text'>
+                            <li id='no-history' class='contrib-node-title pontano-style'>There is no history for this sound share!</li>
+                    </div> 
+                </div>
                 <div id='record-container' class='controls-subcontainer'> 
                     <div class='controls-title v-mid'>
-                        <span class='controls-symbol'>&#9679;</span>
                         Recording
                         <span class='controls-subtitle contrib-subtitle'>
                             make your mark
@@ -154,14 +163,14 @@
                                 <div id='spectrum-title' class='record-controls-text'>
                                     Audio Spectrum
                                 </div>
-                                <div id='waveform-view-container'>
+                                <!--div id='waveform-view-container'>
 
                                     <canvas id='playhead-canvas' width='250' height='95'>
                                     </canvas>
                                     <canvas id='recording-canvas' width='250' height='95'>
                                     </canvas>
-                                 </div>
-                                <!--canvas id='spectrum-canvas' width='116' height='42'-->
+                                 </div-->
+                                <canvas id='spectrum-canvas' width='116' height='42'>
                             </div>
                           
                             <div id='volume-container' title='Left and right channel volumes'>
