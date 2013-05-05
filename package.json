@@ -1,6 +1,6 @@
 {
   "name": "qr-rec-share",
-  "version": "0.0.0-3",
+  "version": "0.0.0-4",
   "private": false,
   "scripts": {
     "start": "node app.js"

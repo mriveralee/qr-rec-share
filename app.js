@@ -219,6 +219,7 @@ app.post('/upload/sound', fileUploadMiddleWare, function(req, res) {
         //Cycle the sound count / replace old sounds
         if (CURRENT_SOUND_COUNT > 4) CURRENT_SOUND_COUNT = 0;
       }
+      res.json(200, {result:"Successful Upload!"});
     }
   }
   else {
@@ -284,7 +285,7 @@ var VISIT_COUNT = 0;
 
 //Main route
 app.get('/', function(req, res) {
-        VISIT_COUNT += 1;
+    VISIT_COUNT += 1;
     var templateVars = {
         //Add some template variables
         PAGE_TITLE: 'Node (Express 3.0.1) & Socket.io Bootstrap'

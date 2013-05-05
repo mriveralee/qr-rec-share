@@ -19,6 +19,8 @@ SS = {
 $(document).ready(function() {
   var IS_MOBILE = (/iPhone|iPod|iPad|Android|BlackBerry/).test(navigator.userAgent);
   console.log('IS MOBILE: ',IS_MOBILE);
+  
+  //IS_MOBILE = true;
   //##################################################################//
   //############################## DEMO ##############################//
   //##################################################################//
@@ -28,10 +30,57 @@ $(document).ready(function() {
    */
   var initDemo = function() {
       //GRAB ALL SOUNDS ON THE PAGE
-      getSoundInformation();
-
+      if (!IS_MOBILE) {
+        getSoundInformation();
+      }
+      else {
+        getMobileSounds();
+      }
 
   };
+
+var getMobileSounds = function() {
+  for (var i = 0; i < 5; i++) {
+    getSoundForID(i);
+  }
+    
+};
+
+var getSoundForID = function(id) {
+  var reqURL = '/sound/'+id;
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', reqURL, true);
+    xhr.responseType = 'arraybuffer';
+    xhr.onload = function() {
+      console.log('Received sound file!');
+      //console.log(data);
+      var n = id;
+      var data = xhr.response;
+
+
+
+      if (data && xhr.status !== 404) {
+        if (isFirstHistoryItem) {
+          $('#history-contrib-list').html("");
+          isFirstHistoryItem = false;
+        }
+        SOUND_BLOBS[id] = data;
+        addAudioTag(n, data);
+      }
+
+      //Decode the sound node
+      //decodeSoundNode(n);
+      //console.log(xhr);
+      // context.decodeAudioData(xhr.response, function(buffer) {
+      //   console.log(buffer);
+
+      // }, function(err) { console.log(err); });
+    data = null;
+    };
+    xhr.send();
+};
+
+
 
 
 
@@ -61,7 +110,7 @@ var retrieveSoundFromServer = function(nodeID) {
       console.log('Received sound file!');
       //console.log(data);
       var n = currentNode.sound_id;
-      data = xhr.response;
+      var data = xhr.response;
       SOUND_BLOBS[nodeID] = data;
 
       //Set the raw audio on the model
@@ -691,7 +740,7 @@ function uploadRecording(file) {
               //console.log(data);
               //TODO USE SOCKETS TO UPDATE TREE
               console.log('uploaded!');
-              window.location.href = window.location.href;
+              window.location.href = window.location.origin;
               //SS.NEEDS_FIRST_SOUND = false;
             },
             error: function(req, status, error){
@@ -768,15 +817,18 @@ function playHistorySound(historyID) {
 }
 
 function playRecordingSound(recID) {
-  if (!recID || recID <0) return;
+  if (recID == null || recID <0) return;
   //Offset id by 1
   recID = recID+1;
-  recordingSource = context.createBufferSource();
-  recordingSource.buffer = DECODED_SOUND_NODES["rec-" + recID];
-  recordingSource.connect(context.destination);
-  recordingSource.connect(analyser);
-  recordingSource.start(context.currentTime);
-  //TREE_PLAYING_NODES.push(recordingSource);
+  if (DECODED_SOUND_NODES["rec-" + recID]){
+
+    recordingSource = context.createBufferSource();
+    recordingSource.buffer = DECODED_SOUND_NODES["rec-" + recID];
+    recordingSource.connect(context.destination);
+    recordingSource.connect(analyser);
+    recordingSource.start(context.currentTime);
+    //TREE_PLAYING_NODES.push(recordingSource);
+  }
 
 }
 
