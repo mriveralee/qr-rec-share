@@ -29,6 +29,80 @@ $(document).ready(function() {
 
   };
 
+
+
+  var NODE_DATA = {};
+
+  //get a node data
+  var getNodeData = function(id) {
+    return NODE_DATA['sound-'+id];
+  };
+
+  var addNodeData = function(data) {
+    NODE_DATA['sound-'+data.sound_id] = data;
+  };
+
+
+
+
+//Retrieve a sound from the server based on node id
+var retrieveSoundFromServer = function(nodeID) {
+  var currentNode = getNodeData(nodeID);
+  if (currentNode) {
+    var reqURL = '/sound/'+nodeID;
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', reqURL, true);
+    xhr.responseType = 'arraybuffer';
+    xhr.onload = function() {
+      console.log('Received sound file!');
+      //console.log(data);
+      data = xhr.response;
+      SOUND_BLOBS[nodeID] = data;
+
+      //Set the raw audio on the model
+      var nodeData = getNodeData(nodeID);
+      nodeData.raw_audio =  data;
+      //Reset the nodeData
+      addNodeData(nodeData);
+
+      //Decode the sound node
+      decodeSoundNode(nodeID);
+      //console.log(xhr);
+      // context.decodeAudioData(xhr.response, function(buffer) {
+      //   console.log(buffer);
+
+      // }, function(err) { console.log(err); });
+    };
+    xhr.send();
+  }
+};
+
+//Decode a sond that is returned for the XHR request
+var decodeSoundNode = function(nodeID) {
+  var ctx = new webkitAudioContext();
+    //Decode the audio and store in teh buffer
+    var soundBlob = SOUND_BLOBS[nodeID];
+     ctx.decodeAudioData(soundBlob, 
+        function(buffer) {
+          //console.log("Decoded the sound for node: "+nodeID);
+          var nodeData = getNodeData(nodeID);
+          nodeData.isDecoded = true;
+          nodeData.isPlayable = true;
+          nodeData.buffer = buffer;
+          addNodeData(nodeData); 
+
+          DECODED_SOUND_NODES['sound-'+nodeID] = buffer;
+          //console.log(buffer);
+        }, function(err) { 
+          //console.log("err(decodeAudioData): "+err); 
+        }
+     );
+};
+
+
+
+
+
   var getSoundInformation = function() {
     $.ajax({
       type: 'GET',
@@ -40,7 +114,14 @@ $(document).ready(function() {
 
         for (var i = 0; i < data.length; i++) {
           var item = data[i];
+          //Add item to our data
+          addNodeData(item);
+          //Get the actual sound file
+          retrieveSoundFromServer(item.sound_id);
+          //Add the list item for the sound
           addHistoryItem(item);
+
+
           //insertUserTreeListItem(title, date, treeID);
         }
       },
@@ -93,10 +174,8 @@ $(document).ready(function() {
 
 
   // User Data View listeners
-  $('#user-img-container').click(showUserDataView);
   $('#modal-overlay').click(
       function() {
-        hideUserDataView();
         cancelUpload()
   });
 
@@ -130,35 +209,13 @@ $(document).ready(function() {
 
 ///Toggle playback of songs
 var togglePlayAllSounds = function(nodePathList, shouldPlayRecording) {
-    if (SS.PLAY_TIMER) {
-        window.clearTimeout(SS.PLAY_TIMER);
-    }
-    nodeListForDrawing = (nodePathList) ? nodePathList : nodeListForDrawing;
-    if (SS.isPlaying) {
-      stopPreviousPathSounds();
-      $('#stop-container').css({display: 'none'});
-      $('#play-arrow-right').css({display: 'block'});
-      SS.isPlaying = false;
-    }
-    else {
-      SS.isPlaying = true;
-      playSoundsForPath(nodeListForDrawing);
-      
-      if (shouldPlayRecording) {
-        playSelectedRecording();
-      }
-      $('#stop-container').css({display: 'block'});
-      $('#play-arrow-right').css({display: 'none'});
-      
-      //console.log(MAX_DURATION);
-      SS.PLAY_TIMER = setTimeout(function() {
-          console.log('playback finished');
-          stopPreviousPathSounds();
-          $('#stop-container').css({display: 'none'});
-          $('#play-arrow-right').css({display: 'block'});
-          }, MAX_DURATION * 1000);
-    } 
+  stopPreviousPathSounds();
+ // playHistorySound(selectedSound);
+  
+  if (shouldPlayRecording) {
+    playSelectedRecording();
   }
+}
 
 //Check if a sound is playing
 var checkIsPlaying = function() {
@@ -168,7 +225,7 @@ var checkIsPlaying = function() {
 
 
 var isFirstHistoryItem = true;
-
+var selectedSound;
 //Adds an item to the list of history
 var addHistoryItem = function(item) {
     //Remove no history
@@ -183,6 +240,7 @@ var addHistoryItem = function(item) {
 
 
     var soundID = 'sound-'+ id;
+    var soundImage = '<img src="/images/sound.png" class="contrib-sound-img" />'
 
     //Update hashmap with the id
     SHOULD_PLAY[id] = 1;
@@ -190,9 +248,10 @@ var addHistoryItem = function(item) {
     //Add a change listener to the checkbox to update the hashmap value for playing
     var listItem = '<li class="history-contrib-list-item">'
                         + '<label for="' + soundID + '">'
+                        +soundImage
                           //+ colorCircle
                           //insert a play button
-                          + '<input checked type="checkbox" id="' + soundID + '" class="float-left marg-top-sm">'
+                          + '<input type="radio" name="sounds" id="' + soundID + '" class="float-left marg-top-sm">'
                           + '<span class="contrib-item-desc">'
                             + '<span class="contrib-node-title">' 
                               + title+', '
@@ -210,202 +269,29 @@ var addHistoryItem = function(item) {
     var el = "#history-contrib-list";
     $(el).append(listItem);
     //Remove all checked sound recordings
-    for (var i = 0; i < numRecordings-1; i++) {
-      $('#sound-'+i).removeAttr('checked');
-    }
+    // for (var i = 0; i < NODE_DATA-1; i++) {
+    //   $('#sound-'+i).removeAttr('checked');
+    // }
 
     //Make a click listener
-    $('#'+soundID).change(function() {
-       // alert(soundID+ 'Item changed');
-        if (SHOULD_PLAY[id] == 1) {
-          SHOULD_PLAY[id] = 0;
-          selectedRecording = id + 1;
-          //#AUD
-          resetWODVals();
-          stopSelectedRecording();
-          stopPreviousPathSounds();
-          //Commented out as a result of the 30 seconds thing
-          //recalculateMaxLength(true);
-          drawWaveforms();
-          drawRecordingWaveform(RW_OFFSET);
-          //recalculateMaxLength(true);
-          for (var i = 0; i < numRecordings; i++) {
-            if (i !== id) {
-              $('#sound-'+i).removeAttr('checked');
-            }
-          }
-          drawWaveforms();
-          drawRecordingWaveform();
-        }
-        else {
-          SHOULD_PLAY[id] = 1;
-          selectedRecording = id + 1;
-          resetWODVals();
-          stopSelectedRecording();
-          stopPreviousPathSounds();
-          //Commented out as a result of the 30 seconds thing
-          //recalculateMaxLength(true);
-          drawWaveforms();
-          drawRecordingWaveform(RW_OFFSET);
-          //recalculateMaxLength(true);
-          for (var i = 0; i < numRecordings; i++) {
-            if (i !== id) {
-              $('#sound-'+i).removeAttr('checked');
-            }
-          }
-          drawWaveforms();
-          drawRecordingWaveform();
-        }
+    $('#'+soundID).click(function() {
+      stopSelectedRecording();
+      stopPreviousPathSounds();
+      playHistorySound(id);
+      selectedSound = id;
+       // // alert(soundID+ 'Item changed');
+       //  if (SHOULD_PLAY[id] == 1) {
+       //    SHOULD_PLAY[id] = 0;
+       //    selectedSound = id + 1;
+       //    //#AUD
+       //    stopSelectedRecording();
+       //    stopPreviousPathSounds();
+       //  }
+       //  else {
+       //    SHOULD_PLAY[id] = 1;
+       //    selectedRecording = id + 1;
+       //  }
     });
-    //Draw the new wave forms after we record a new sound
-    drawWaveforms();
-    drawRecordingWaveform();
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//Show the data view for an individual user
-var showUserDataView = function() {
-  if (!getFBUser()) {
-      FB_API.login(showUserDataView);
-      return;
-  }
-
-  var user = getFBUser();
-  var name = user.name;
-  var picture = user.picture;
-  $('#user-data-window').css("display", "block");
-  $('#user-data-window').animate({top: '11%'}, 0);
-  $('#modal-overlay').css('display', 'block');
-  $('#user-data-prof-pic').attr({src: picture});
-  $('#user-data-username').text(name);
-
-
-  //TODO: Get the user trees
-  $.ajax({
-    type: 'GET',
-    url: '/nodes/'+user.id,
-    success: function(data, status, req) {
-      //console.log(data);
-      for (var i = 0; i < data.length; i++) {
-        var node = data[i]; 
-        var title = removeHTMLTags(node.title);
-        var date = getDateString(node.date_created);
-        var nodeID = node.node_id;
-        var treeID = node.tree_id;
-        insertUserNodeListItem(title, date, nodeID, treeID);
-      }
-    },
-    error: function(req, status, error){
-      console.log(error);
-      //TODO: error uploading the tree
-    },
-  });
-
-  //TODO: Get the User 
-  $.ajax({
-    type: 'GET',
-    url: '/trees/'+user.id,
-    success: function(data, status, req) {
-      //console.log(data);
-      for (var i = 0; i < data.length; i++) {
-        var tree = data[i];
-        var title = removeHTMLTags(tree.title);
-        var date = getDateString(tree.date_created);
-        var treeID = tree.tree_id;
-        insertUserTreeListItem(title, date, treeID);
-      }
-    },
-    error: function(req, status, error){
-      console.log(error);
-
-      //TODO: error uploading the tree
-    },
-  });
-
-  //console.log('Show User Data Fields!');
-};
-
-var hideUserDataView = function() {
-  $('#user-data-nodes-list').html('');
-  $('#user-data-trees-list').html('');
-  $('#user-data-window').animate({top: '-1000px'}, 0);
-  $('#modal-overlay').css('display', 'none');
-};
-
-
-
-//Inserts a list item for user's tree (for showing which trees a user has made)
-var insertUserNodeListItem = function(title, date, nodeID, treeID) {
-  //console.log(nodeShareID);
-  var nodeShareID = 'node-share-' + nodeID;
-  var treeShareID = 'tree-share-' + treeID;
-  var linkURL = window.location.origin + '/' + '?tree=' + treeID + '&selected=' + nodeID;
-  //console.log(linkURL);
-  var listItem = '<span class="user-data-list-item">' +
-    '<span class="v-mid">'+ '<a href="' + linkURL + '" target="_blank"><em>' + title + '</em>, ' + date + '</a></span>' +
-    '<img id="' + nodeShareID + '" class="user-data-share-icon v-mid" src="/images/fb.png"></span>';
-  
-  $('#user-data-nodes-list').append(listItem);
-  //console.log(nodeID);
-  addShareNodeListener(title, nodeID, treeID, nodeShareID);
-};
-
-//Adds a listener for the fb link in the user's nodes section
-var addShareNodeListener = function(title, nodeID, treeID, divID) {
-  $('#' + divID).click(function() {
-    postNodeToFeed(title, nodeID, treeID);
-  });
-};
-
-//Inserts a list item for user's nodes (for showing which trees a user has made)
-var insertUserTreeListItem = function(title, date, treeID) {
-  var treeShareID = 'tree-share-' + treeID;
-  var linkURL = window.location.origin + '/' + '?tree=' + treeID;
-  //console.log(linkURL);
-  var listItem = '<span class="user-data-list-item">' +
-    '<span class="v-mid">'+ '<a href="'+ linkURL + '" target="_blank"><em>' + title + '</em>, ' + date + '</a></span>' +
-    '<img id="' + treeShareID + '" class="user-data-share-icon v-mid" src="/images/fb.png"></span>';
-  
-  $('#user-data-trees-list').append(listItem);
-  addShareTreeListener(title, treeID, treeShareID);
-};
-
-var postNodeToFeed = function(title, nodeID, treeID) {
-  var name = getFBUser().name;
-  var currentDomain = (window.location.host !== 'localhost:8000') ? window.location.host : 'mriveralee.phase-change.jit.su';
-  var picURL = 'http://'+currentDomain+'/images/logo_48.png';
-  //console.log(currentDomain);
-  // calling the API ...
-  var obj = {
-    method: 'feed',
-    link: currentDomain + '/?tree=' + treeID+'&selected='+nodeID,
-    picture: picURL,
-    name: 'Listen to my awesome sound, ' + title + '!',
-    caption: 'Phase Change',
-    description: name + ' collaborated on a sound. Have a listen!'
-  };
-
-  // push user data window behind modal overlay when fb pop comes up
-  $('#user-data-window').css('z-index', 10000);
-  function callback(response) {
-    //console.log( "Post ID: " + response['post_id']); // post id of fb post if posted
-    //console.log('posters gonna post' + treeID);
-    // push user data window back onto of modal overlay when fb popup closes
-    $('#user-data-window').css('z-index', 11000);
-  }
-  FB.ui(obj, callback);
 };
 
 
@@ -567,6 +453,9 @@ function startRecorder() {
 var SHOULD_PLAY = {}
 //Adds a contribution 
 var isFirstRecording = true;
+
+
+var selectedRecording;
 var addRecordedItem = function() {
     //Remove no recordings
     if (isFirstRecording) {
@@ -575,8 +464,9 @@ var addRecordedItem = function() {
     }
     //Generate random ID
     var id = (numRecordings-1);
-    var soundID = 'sound-'+ id;
+    var soundID = 'rec-'+ id;
     var currDate = getDateString(new Date().getTime());
+        var soundImage = '<img src="/images/sound.png" class="contrib-sound-img" />'
     //Update hashmap with the id
     SHOULD_PLAY[id] = 1;
     //Append the check box
@@ -585,9 +475,9 @@ var addRecordedItem = function() {
     var userName =  (user) ? user.name : 'Anonymous';
     var colorCircle = "<div class='contrib-circle' style='background-color:"+getRecordingColorAsHexString()+"'></div>";
     var listItem = '<li class="user-contrib-list-item">'
-                        + '<label for="' + soundID + '">'
+                        + '<label for="' + soundID + '">' + soundImage 
                           //+ colorCircle
-                          + '<input checked type="checkbox" id="' + soundID + '" class="float-left marg-top-sm">'
+                          + '<input checked name="recordings" type="radio" id="' + soundID + '" class="float-left marg-top-sm">'
                           + '<span class="contrib-item-desc">'
                             + '<span class="contrib-node-title">' 
                               + 'Sound #'+id+', '
@@ -606,55 +496,18 @@ var addRecordedItem = function() {
     $(el).append(listItem);
     //Remove all checked sound recordings
     for (var i = 0; i < numRecordings-1; i++) {
-      $('#sound-'+i).removeAttr('checked');
+      $('#rec-'+i).removeAttr('checked');
     }
 
     //Make a click listener
-    $('#'+soundID).change(function() {
-       // alert(soundID+ 'Item changed');
-        if (SHOULD_PLAY[id] == 1) {
-          SHOULD_PLAY[id] = 0;
-          selectedRecording = id + 1;
-          //#AUD
-          resetWODVals();
-          stopSelectedRecording();
-          stopPreviousPathSounds();
-          //Commented out as a result of the 30 seconds thing
-          //recalculateMaxLength(true);
-          drawWaveforms();
-          drawRecordingWaveform(RW_OFFSET);
-          //recalculateMaxLength(true);
-          for (var i = 0; i < numRecordings; i++) {
-            if (i !== id) {
-              $('#sound-'+i).removeAttr('checked');
-            }
-          }
-          drawWaveforms();
-          drawRecordingWaveform();
-        }
-        else {
-          SHOULD_PLAY[id] = 1;
-          selectedRecording = id + 1;
-          resetWODVals();
-          stopSelectedRecording();
-          stopPreviousPathSounds();
-          //Commented out as a result of the 30 seconds thing
-          //recalculateMaxLength(true);
-          drawWaveforms();
-          drawRecordingWaveform(RW_OFFSET);
-          //recalculateMaxLength(true);
-          for (var i = 0; i < numRecordings; i++) {
-            if (i !== id) {
-              $('#sound-'+i).removeAttr('checked');
-            }
-          }
-          drawWaveforms();
-          drawRecordingWaveform();
-        }
+    $('#'+soundID).click(function() {
+      stopPreviousPathSounds();
+      selectedRecording = id;
+      playRecordingSound(id);
     });
     //Draw the new wave forms after we record a new sound
-    drawWaveforms();
-    drawRecordingWaveform();
+   // drawWaveforms();
+    //drawRecordingWaveform();
 }
 
 
@@ -775,8 +628,8 @@ function uploadRecording(file) {
       //console.log("Buffer: " + masterRecording.buffer);
       //Upload Data
       var soundTitle = $('#upload-title').val() ? $('#upload-title').val() : 'Untitled',
-          soundArtist = $('#upload-artist').val() ? $('#upload-artist').val() : 'Anonymous'
-          ;//userID = (fbUser && fbUser.id) ? fbUser.id : -1,
+          soundArtist = $('#upload-artist').val() ? $('#upload-artist').val() : 'Anonymous';
+          //userID = (fbUser && fbUser.id) ? fbUser.id : -1,
           //userName = (fbUser && fbUser.username) ? fbUser.username : soundArtist;
           //soundArtist = $('#upload-artist').val() ? $('#upload-artist').val()  : 'Anonymous',
 
@@ -870,6 +723,36 @@ function playAllSounds() {
 }
 
 
+function playHistorySound(historyID) {
+  if (!selectedSound) return;
+  source = context.createBufferSource();
+  source.buffer = DECODED_SOUND_NODES['sound-'+historyID];
+  source.connect(context.destination);
+  source.connect(analyser);
+  source.start(context.currentTime);
+  TREE_PLAYING_NODES.push(source);
+  //drawWaveforms();
+  //drawRecordingWaveform(RW_WHEN, RW_OFFSET, RW_DURATION);
+  //console.log("RWO: " + RW_OFFSET + ", RPW: " + RP_WHEN + ", RPO: " + RP_OFFSET + ", RPD: " + RP_DURATION);
+  //console.log("Playing sample " + i);
+}
+
+function playRecordingSound(recID) {
+  //Offset id by 1
+  recID = recID+1;
+  recordingSource = context.createBufferSource();
+  recordingSource.buffer = DECODED_SOUND_NODES["rec-" + recID];
+  recordingSource.connect(context.destination);
+  recordingSource.connect(analyser);
+  recordingSource.start(context.currentTime);
+  //TREE_PLAYING_NODES.push(recordingSource);
+
+}
+
+
+
+
+
 function playSelectedRecording() {
   if (!selectedRecording) {
     return;
@@ -882,12 +765,12 @@ function playSelectedRecording() {
   //     MAX_DURATION = DECODED_SOUND_NODES["rec-" + selectedRecording].duration;
   // }
   recordingSource = context.createBufferSource();
-  recordingSource.buffer = DECODED_SOUND_NODES["rec-" + selectedRecording];
+  recordingSource.buffer = DECODED_SOUND_NODES["rec-" + (selectedRecording+1)];
   recordingSource.connect(context.destination);
   recordingSource.connect(analyser);
-  recordingSource.start(context.currentTime + RP_WHEN, RP_OFFSET, RP_DURATION);
-  drawWaveforms();
-  drawRecordingWaveform(RW_WHEN, RW_OFFSET, RW_DURATION);
+  recordingSource.start(context.currentTime);
+  //drawWaveforms();
+  //drawRecordingWaveform(RW_WHEN, RW_OFFSET, RW_DURATION);
   //console.log("RWO: " + RW_OFFSET + ", RPW: " + RP_WHEN + ", RPO: " + RP_OFFSET + ", RPD: " + RP_DURATION);
   //console.log("Playing sample " + i);
 }
@@ -1010,31 +893,31 @@ function recalculateMaxLength(withRecording) {
 //#AUD
 function drawRecordingWaveform(when, offset, duration) {
   //console.log("Duration: " + duration);
-  if (false) {
-    var c = document.getElementById("recording-canvas");
-    c.width = c.width;
-    if (numRecordings > 0 && selectedRecording > 0) {
-      //console.log("Drawing WF");
-      var color = getRecordingWaveformColor();
-      drawWaveformForNode("rec-"+selectedRecording, color, c, when, offset, duration);
-      if (RECORDING_IS_HOVERED) {
-        var ctx = c.getContext("2d");
-        ctx.strokeStyle = "rgba(0, 50, 0, 0.5)";
-        ctx.beginPath();
-        ctx.moveTo(when, 0);
-        ctx.lineTo(when, c.height);
-        ctx.stroke();
-        ctx.closePath();
+  // if (false) {
+  //   var c = document.getElementById("recording-canvas");
+  //   c.width = c.width;
+  //   if (numRecordings > 0 && selectedRecording > 0) {
+  //     //console.log("Drawing WF");
+  //     var color = getRecordingWaveformColor();
+  //     drawWaveformForNode("rec-"+selectedRecording, color, c, when, offset, duration);
+  //     if (RECORDING_IS_HOVERED) {
+  //       var ctx = c.getContext("2d");
+  //       ctx.strokeStyle = "rgba(0, 50, 0, 0.5)";
+  //       ctx.beginPath();
+  //       ctx.moveTo(when, 0);
+  //       ctx.lineTo(when, c.height);
+  //       ctx.stroke();
+  //       ctx.closePath();
 
-        ctx.beginPath();
-        ctx.moveTo(when + duration, 0);
-        ctx.lineTo(when + duration, c.height);
-        ctx.stroke();
-        ctx.closePath();
-        //console.log("Drew starting line");
-      }
-    }
-  }
+  //       ctx.beginPath();
+  //       ctx.moveTo(when + duration, 0);
+  //       ctx.lineTo(when + duration, c.height);
+  //       ctx.stroke();
+  //       ctx.closePath();
+  //       //console.log("Drew starting line");
+  //     }
+  //   }
+  // }
   if (selectedRecording > 0) {
     SELECTED_RECORDING_DURATION = DECODED_SOUND_NODES["rec-"+selectedRecording].duration;
   }
@@ -1045,7 +928,7 @@ function drawWaveformForNode(nodeID, color, c, when, offset, duration) {
   //return;
   //var c = document.getElementById("waveform-canvas");
   //console.log("Canvas Width: " + c.width);
-  return;
+
   var ctx = c.getContext("2d");
   if (DECODED_SOUND_NODES[nodeID]) {
     var left = DECODED_SOUND_NODES[nodeID].getChannelData(0);
@@ -1097,17 +980,17 @@ function secondsToPixels(val, c) {
 }
 
 function resetWODVals () {
-
+  return;
   RP_WHEN = 0;
   RP_OFFSET = 0;
   RP_DURATION = (DECODED_SOUND_NODES["rec-"+selectedRecording].duration);
 
   RW_WHEN = 0;
   RW_OFFSET = 0;
-  var r = document.getElementById("recording-canvas");
-  r.width = $('#waveform-view-container').get(0).clientWidth;
-  r.height = $('#waveform-view-container').get(0).clientHeight;
-  RW_DURATION = secondsToPixels(RP_DURATION, r);
+  // var r = document.getElementById("recording-canvas");
+  // r.width = $('#waveform-view-container').get(0).clientWidth;
+  // r.height = $('#waveform-view-container').get(0).clientHeight;
+  RW_DURATION = secondsToPixels(RP_DURATION);
   //console.log("New RPD: " + RP_DURATION + ", and RWD: " + RW_DURATION);
 }
 
@@ -1441,55 +1324,6 @@ var stopPreviousPathSounds = function() {
   }
   //Clear out the P
   TREE_PLAYING_NODES.length = 0;
-};
-
-
-//Retrieve a sound from the server based on node id
-var retrieveSoundFromServer = function(nodeID) {
-  var currentNode = getNodeData(nodeID);
-  if (currentNode) {
-    var reqURL = '/sound/'+nodeID;
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', reqURL, true);
-    xhr.responseType = 'arraybuffer';
-    xhr.onload = function() {
-      //console.log('Received sound file!');
-      //console.log(data);
-      data = xhr.response;
-      SOUND_BLOBS[nodeID] = data;
-
-      //Set the raw audio on the model
-      var nodeData = getNodeData(nodeID);
-      nodeData.set({raw_audio: data});
-      //Decode the sound node
-      decodeSoundNode(nodeID);
-      //console.log(xhr);
-      // context.decodeAudioData(xhr.response, function(buffer) {
-      //   console.log(buffer);
-
-      // }, function(err) { console.log(err); });
-    };
-    xhr.send();
-  }
-};
-
-//Decode a sond that is returned for the XHR request
-var decodeSoundNode = function(nodeID) {
-  var ctx = new webkitAudioContext();
-    //Decode the audio and store in teh buffer
-    var soundBlob = SOUND_BLOBS[nodeID];
-     ctx.decodeAudioData(soundBlob, 
-        function(buffer) {
-          //console.log("Decoded the sound for node: "+nodeID);
-          var nodeData = getNodeData(nodeID);
-          nodeData.set({'isDecoded': true, 'isPlayable': true, 'buffer': buffer});
-          
-          DECODED_SOUND_NODES[nodeID] = buffer;
-          //console.log(buffer);
-        }, function(err) { 
-          //console.log("err(decodeAudioData): "+err); 
-        }
-     );
 };
 
 

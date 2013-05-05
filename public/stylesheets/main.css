@@ -728,7 +728,7 @@ h2 {
 }
 
 .controls-subcontainer {
-  height: 100%;
+  height: 360px;
   position: relative;
   margin-top: 6px;
   display:block;
@@ -778,7 +778,7 @@ h2 {
 
 
 #sound-history-container {
-  height: 100px;
+  height: 140px;
   width: 100%;
   padding: 10px;
 }
@@ -802,12 +802,11 @@ h2 {
   font-style: italic;
 }
 
-#contrib-sound-img {
+.contrib-sound-img {
   width: 24px;
   height: 24px;
   vertical-align: middle;
   position: relative;
-  top: 4px;
 }
 
 #record-sound-img {
@@ -815,7 +814,6 @@ h2 {
   height: 24px;
   vertical-align: middle;
   position: relative;
-  top: 4px;
   opacity: 0.0;
 }
 
@@ -839,10 +837,30 @@ h2 {
 
 .contrib-item-desc {
   font-family: 'Pontano Sans', sans-serif;
+  vertical-align: middle;
 }
 
 
+
+.history-contrib-list-item label{
+  vertical-align: middle;
+  cursor: pointer;
+  display:block;
+}
+.history-contrib-list-item:hover {
+  background-color:#A20C4A;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+  margin-right: 10px;
+}
+
+
+
+
+
 .contrib-list-item label{
+  vertical-align: middle;
   cursor: pointer;
   display:block;
 }
@@ -924,20 +942,20 @@ h2 {
 #user-contrib-list {
   /*border: 1px solid red;*/
   overflow: auto;
-  height: 66px;
+  height: 126px;
   width: 100%;
   margin-top: 2px;
 }
 
 #user-contrib-list li { 
   list-style-type: none; 
+
 }
 
 
 .user-contrib-list-item label{
   padding-top: 3px;
   cursor: pointer;
-  display:block;
 }
 .user-contrib-list-item:hover {
  /* background-color:#A20C4A;*/
@@ -945,6 +963,7 @@ h2 {
   -webkit-border-radius: 5px;
   -moz-border-radius: 5px;
   border-radius: 5px;
+    margin-right: 10px;
 }
 
 
