@@ -108,19 +108,14 @@ app.get('/getSound', function(req,res) {
  * - the sound's title
  * - anything else :o
  */
-var UPLOADED_SOUNDS = [];
-
-//Sample Sound
-UPLOADED_SOUNDS.push( {
-  'title': 'Initial Test',
-  'artist': 'Mystery',
-  'date_created': (new Date).getTime(),
-  'sound_id': 0,
-  'sound_url': 'test-sound/Testing93661850.wav'
-});
-
+var UPLOADED_SOUNDS;
 //Current Count of sounds stored
-var CURRENT_SOUND_COUNT = 0;
+var CURRENT_SOUND_COUNT;
+
+//Use a Max Count to limit the number of sounds
+var USE_MAX_COUNT = false;
+
+//USE_MAX_COUNT = 5;
 
 //Sound Node Object for storing uploads
 var SoundNode = function(title, artist, URL, soundID) {
@@ -131,10 +126,28 @@ var SoundNode = function(title, artist, URL, soundID) {
     this.date_created = (new Date()).getTime();
 }
 
-//Class methods
-// SoundNode.prototype = { 
-// }
 
+function clearAllSoundHistory() {
+  //Sample Sound
+  UPLOADED_SOUNDS = [];
+  UPLOADED_SOUNDS.push( {
+    'title': 'Initial Test',
+    'artist': 'Mystery',
+    'date_created': (new Date).getTime(),
+    'sound_id': 0,
+    'sound_url': 'test-sound/Testing93661850.wav'
+  });
+  console.log('Cleared All Sound History');
+
+  //Current Count of sounds stored
+  CURRENT_SOUND_COUNT = UPLOADED_SOUNDS.length;
+}
+
+//Clear out all sounds except the test sound
+app.get('/clear', function(req, res){
+  clearAllSoundHistory();
+  res.redirect('/')
+});
 
 
 
@@ -149,7 +162,7 @@ var SoundNode = function(title, artist, URL, soundID) {
 //Retrieve a sound file
 app.get('/sound/:id?', function(req,res) {
   var nodeID = req.param('id');
-  if (!nodeID || 0 > nodeID || nodeID >= 5) {
+  if (!nodeID || 0 > nodeID || nodeID >= UPLOADED_SOUNDS.length) {
     //No id, then send to home page
     res.json(500, { error: 'No Such Sound Exists' });
     //res.redirect('/');
@@ -222,11 +235,11 @@ app.post('/upload/sound', fileUploadMiddleWare, function(req, res) {
         var artist = soundData.artist;
         var title = soundData.title;
         var URL = filePath;
-        UPLOADED_SOUNDS[CURRENT_SOUND_COUNT] = new SoundNode(artist, title, URL, CURRENT_SOUND_COUNT);
-        CURRENT_SOUND_COUNT += 1;
+        UPLOADED_SOUNDS.push(new SoundNode(artist, title, URL, UPLOADED_SOUNDS.length));
+        CURRENT_SOUND_COUNT = UPLOADED_SOUNDS.length
         //console.log(UPLOADED_SOUNDS);
-        //Cycle the sound count / replace old sounds
-        if (CURRENT_SOUND_COUNT > 4) CURRENT_SOUND_COUNT = 0;
+        //Cycle the sound count / replace old sounds if we have a max count
+        if (USE_MAX_COUNT && CURRENT_SOUND_COUNT > 4) CURRENT_SOUND_COUNT = 0;
       }
       res.json(200, {result:"Successful Upload!"});
     }
@@ -298,7 +311,8 @@ app.get('/mobile', function(req, res) {
         //Add some template variables
         PAGE_TITLE: 'Node (Express 3.0.1) & Socket.io Bootstrap',
         SOUND_COUNT: UPLOADED_SOUNDS.length,
-        UPLOADED_SOUNDS: UPLOADED_SOUNDS
+        UPLOADED_SOUNDS: UPLOADED_SOUNDS,
+        VISIT_COUNT: VISIT_COUNT
     };
 
     //Render the index.ejs file with any template variables
@@ -310,13 +324,27 @@ app.get('/mobile', function(req, res) {
 //Main route
 app.get('/', function(req, res) {
     VISIT_COUNT += 1;
-    var templateVars = {
+    var VARS = {
         //Add some template variables
-        PAGE_TITLE: 'Node (Express 3.0.1) & Socket.io Bootstrap'
+        PAGE_TITLE: 'Node (Express 3.0.1) & Socket.io Bootstrap',
+        VISIT_COUNT: VISIT_COUNT
     };
 
     //Render the index.ejs file with any template variables
-    res.render('index', templateVars);
+    res.render('index', VARS);
 });
+
+
+////////////////////////////////////
+//// Initialize the server data ////
+////////////////////////////////////
+function init() {
+  clearAllSoundHistory();
+
+
+}
+
+/////// Run INIT /////
+init();
 
 

@@ -30,70 +30,8 @@
         <div id='first-node-upload' class='controls-title'>
             There are no previous recordings.
         </div>
-        
-            
-            <div id='upload-text-window'>
-                <div id='upload-info'>
-                    <div id='upload-header'>
-                        <img class='popup-header-logo' src='./images/sound.png'>
-                        <span class='v-mid'>Add your sound.</span>
-                    </div>
-                    <div id='upload-user-info'>
-                        <div id='upload-wrapper'>
-                            <div id='upload-user-input'>
-                                <img id='upload-prof-pic' class='float-left'>
-                                <!--span id='upload-username'></span-->
-                                 <input id='upload-artist' type='text' name='Title' placeholder=' Sound Artist' required maxlength='20'>
-                                
-                                <input id='upload-title' type='text' name='Title' placeholder=' Sound Title' required maxlength='20'>
-                                <span id='upload-date'></span>
-                                <br />
-                            </div>
-                        </div>
-                    </div>
-                    <div id='upload-button-container'>            
-                        <button id='submit-upload'>Create
-                        </button>
-                        <button id='cancel-upload'>Cancel
-                        </button>
-                    </div>
-                </div><!--upload-info-->
-            </div><!--upload-text-window-->
-
-          
+                  
         <div id='fb-root'></div>    
-        <!--div id='main-wrapper'> 
-            <div id='header'>
-                <div id='header-interaction' class='float-right'>
-                    <div id='header-link-container'>
-                        <div id='sign-up' class='float-left header-link' title='Sign-up'>
-                           <span class='vertical-center-header'>FB Login</span>
-                        </div>
-                        <div id='logged-in' >   
-                            <div id='add-tree' class='header-link float-left'>
-                            <div class='table-cell v-mid center header-height'>
-                                <div class='inline-block'>
-                                    <img id='add-tree-icon' src='images/tree_icon_48.png' title='Add a tree'/>
-                                </div>
-                            </div>
-                            </div> 
-                            <div class='user-img-container' class='float-left'>
-                                <div id='user-img-container' class='header-img-link table-cell v-mid center header-height'>
-                                    <div class='inline-block'>
-                                        <img id='user-img' class='v-mid' src='images/person_32.png' title='You' />
-                                    </div>
-                                </div>
-                                <div id='gear-icon-container' class='header-img-link table-cell v-mid center header-height'>
-                                    <div class='inline-block'>
-                                        <img id='gear-icon' class='v-mid' src='images/gear.png' title='Log out' />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>  
-                    </div>
-                </div>
-            </div>
-        </div-->
         <div id='top'></div>
         <div id="floater"></div>
         <div id='control-wrap'> 
@@ -104,7 +42,7 @@
                             <span class='medium-wt'>Sound Share</span>
                         </div>
                         <div id='header-subtitle'>
-                            Sound Share <br /> <br />
+                             Visit Count: <%= VISIT_COUNT %> <br /> <br />
                             <img id='header-logo-img' src='./images/qr-code.gif' /> 
                         </div>
                     </div>
@@ -227,6 +165,34 @@
                                     </canvas>
 
         </div><!--controls-container-->
+        <div id='upload-text-window'>
+            <div id='upload-info'>
+                <div id='upload-header'>
+                    <img class='popup-header-logo' src='./images/sound.png'>
+                    <span class='v-mid'>&nbsp;Add a Sound</span>
+                </div>
+                <div id='upload-user-info'>
+                    <div id='upload-wrapper'>
+                        <div id='upload-user-input'>
+                            <img id='upload-prof-pic' class='float-left'>
+                            <!--span id='upload-username'></span-->
+                            <input id='upload-title' type='text' name='Title' placeholder=' Sound Title' required maxlength='20'>
+                             <input id='upload-artist' type='text' name='Title' placeholder=' Sound Artist' required maxlength='20'>
+                            
+                            
+                            <span id='upload-date'></span>
+                            <br />
+                        </div>
+                    </div>
+                </div>
+                <div id='upload-button-container'>            
+                    <button id='submit-upload'>Create
+                    </button>
+                    <button id='cancel-upload'>Cancel
+                    </button>
+                </div>
+            </div><!--upload-info-->
+        </div><!--upload-text-window-->
     </body>
 </html>
 

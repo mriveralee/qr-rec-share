@@ -655,7 +655,7 @@ var showUploadFields = function(){
     var currDate = getDateString(new Date().getTime());
   
     $('#upload-text-window').css("display", "block");
-    $('#upload-text-window').animate({top: '20%'}, 0);
+    //$('#upload-text-window').animate({top: '20%'}, 0);
     // $('#upload-prof-pic').attr({src: picture});
     // $('#upload-username').html(name);
     $('#upload-date').html(currDate);
@@ -664,7 +664,7 @@ var showUploadFields = function(){
 };
 
 var hideUploadFields = function() {
-  $('#upload-text-window').animate({top: '-1000px'}, 0);
+  $('#upload-text-window').css('display', 'none');
   $('#modal-overlay').css('display', 'none');
 };
 
@@ -745,6 +745,7 @@ function uploadRecording(file) {
               //TODO USE SOCKETS TO UPDATE TREE
               console.log('uploaded!');
               window.location.href = window.location.origin;
+              hideUploadFields();
               //SS.NEEDS_FIRST_SOUND = false;
             },
             error: function(req, status, error){
