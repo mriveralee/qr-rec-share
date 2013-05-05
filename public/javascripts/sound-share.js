@@ -212,9 +212,9 @@ var togglePlayAllSounds = function(nodePathList, shouldPlayRecording) {
   stopPreviousPathSounds();
  // playHistorySound(selectedSound);
   
-  if (shouldPlayRecording) {
-    playSelectedRecording();
-  }
+
+    playRecordingSound(selectedRecording);
+
 }
 
 //Check if a sound is playing
