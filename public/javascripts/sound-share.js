@@ -179,7 +179,7 @@ var addHistoryItem = function(item) {
     var title = removeHTMLTags(item.title);
     var date = getDateString(item.date_created);
     var id = item.sound_id;
-    var artist = item.artist ? item.artist ? : 'Anonymous';
+    var artist = item.artist ? item.artist : 'Anonymous';
 
 
     var soundID = 'sound-'+ id;
@@ -188,8 +188,6 @@ var addHistoryItem = function(item) {
     SHOULD_PLAY[id] = 1;
     //Append the check box
     //Add a change listener to the checkbox to update the hashmap value for playing
-    var user = getFBUser();
-    var userName =  (user) ? user.name : 'Anonymous';
     var listItem = '<li class="history-contrib-list-item">'
                         + '<label for="' + soundID + '">'
                           //+ colorCircle
@@ -197,7 +195,7 @@ var addHistoryItem = function(item) {
                           + '<input checked type="checkbox" id="' + soundID + '" class="float-left marg-top-sm">'
                           + '<span class="contrib-item-desc">'
                             + '<span class="contrib-node-title">' 
-                              + 'Sound #'+id+', '
+                              + title+', '
                             + '</span>'
                             + '<span class="contrib-node-artist">' 
                               + artist + ' - '
@@ -209,7 +207,7 @@ var addHistoryItem = function(item) {
                         + '</label>'
                     + '</li>';
 
-    var el = "#user-contrib-list";
+    var el = "#history-contrib-list";
     $(el).append(listItem);
     //Remove all checked sound recordings
     for (var i = 0; i < numRecordings-1; i++) {
@@ -951,6 +949,7 @@ var onFail = function(e) {
 
 //DRAWING FUNCTIONS
 function drawWaveforms() {
+  return;
   var c = document.getElementById("waveform-canvas");
   var ctx = c.getContext("2d");
   c.width = $('#waveform-view-container').get(0).clientWidth;
