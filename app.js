@@ -235,7 +235,7 @@ app.post('/upload/sound', fileUploadMiddleWare, function(req, res) {
         var artist = soundData.artist;
         var title = soundData.title;
         var URL = filePath;
-        UPLOADED_SOUNDS.push(new SoundNode(artist, title, URL, UPLOADED_SOUNDS.length));
+        UPLOADED_SOUNDS.push(new SoundNode(title, artist, URL, UPLOADED_SOUNDS.length));
         CURRENT_SOUND_COUNT = UPLOADED_SOUNDS.length
         //console.log(UPLOADED_SOUNDS);
         //Cycle the sound count / replace old sounds if we have a max count
@@ -304,6 +304,20 @@ app.get('/node/:id', function(req, res) {
 
 
 var VISIT_COUNT = 0;
+
+var DEMO_LOCATION = 'sound-share-demo.mp4';
+app.get('/demo', function(req, res) {
+   res.sendfile(DEMO_LOCATION, {root: UPLOAD_LOCATION}, function (err) {
+          if(err) {
+            console.log('File Send Error: ' + err);
+            res.json(404, {error:'File Does Not Exist'});
+          }
+          else {
+            console.log('File Sent!');
+          }
+  });
+});
+
 
 app.get('/mobile', function(req, res) {
     VISIT_COUNT += 1;

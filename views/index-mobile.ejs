@@ -75,10 +75,11 @@
                             %>
                             <% for (var i= 0; i < SOUND_COUNT; i++) { %>
 
-
-                                <span class="contrib-node-title"><%=UPLOADED_SOUNDS[i].title %>, </span>'
-                                <span class="contrib-node-artist"><%=UPLOADED_SOUNDS[i].artist %> - </span>
-                                <span class="contrib-node-date"><%=getDateString(new Date().getTime())%></span>
+                                <span class="contrib-item-desc">
+                                  <span class="contrib-node-title"><%=UPLOADED_SOUNDS[i].title %>, </span>
+                                  <span class="contrib-node-artist"><%=UPLOADED_SOUNDS[i].artist %> - </span>
+                                  <span class="contrib-node-date"><%=getDateString(new Date().getTime())%></span>
+                                </span>
                                 <br/>
                             <audio src="<%='/sound/'+i%>" controls='controls'></audio><br/>
                             <% } %>

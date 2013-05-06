@@ -1,0 +1,16 @@
+Sound Share is an interface for sharing auditory information through the use of QR Codes. 
+
+This desktop interface permits the recording and playback of sounds.
+
+The History section provides a list of sounds created along with authorship information- a sound's title, author and date created.
+
+
+The Recording section lists the sounds recorded by the user during the current session.
+
+The interaction panel permits the recording, playback and visualization of sounds.
+Recorded sounds can be shared using the upload button- the appearing upload dialog provides a means providing authorship information for a selected sound.
+
+Upon sharing sounds are accessible to all users who have access to the QR Code.
+
+The mobile web component permits users to play the sound history attached a QR Code but not record.
+
