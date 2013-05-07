@@ -1,0 +1,27 @@
+Michael Rivera
+IPD Final Web Demonstration
+5/6/2013
+==========================
+
+NOTE: YOU MUST USE GOOGLE CHROME for the WEB VERSION of the site to record
+and play sounds (it uses new HTML5-Web Functionality that is only currently supported
+by Chrome). 
+
+You can still listen to sounds/the history using the Mobile Version in a desktop browser
+without issues (tested in Chrome & Safari).
+
+-The Online Demo Video:
+	http://qrshare.jit.su/demo
+
+-The Web version of the site is available at:
+	http://qrshare.jit.su
+
+-The Mobile version of the site is available at:
+	http://qrshare.jit.su/mobile
+
+-The QR Code linking to the site is available at:
+	http://qrshare.jit.su/images/qr-code.gif
+
+NOTE: When viewing in either site, the containers hold each sound name/artist are scrollable. So if you cannot see a sound on your phone, you have to scroll in the container.
+
+
